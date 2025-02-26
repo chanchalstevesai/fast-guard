@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 
 const API_BASE_URL =
-  "https://9fb6-2405-201-3009-d88a-8d21-eba4-f7e7-9136.ngrok-free.app";
+  "https://5e46-2405-201-3009-d88a-8d21-eba4-f7e7-9136.ngrok-free.app";
 
 const axiosConfig = {
   headers: {
@@ -120,6 +120,34 @@ const Dashboard = () => {
     }
   };
 
+  const LoadingDots = () => {
+    return (
+      <span style={{ display: "inline-flex" }}>
+        <span className="dot">.</span>
+        <span className="dot">.</span>
+        <span className="dot">.</span>
+        <style>
+          {`
+            .dot {
+              font-size: 24px;
+              font-weight: bold;
+              animation: jump 1.5s infinite;
+            }
+  
+            .dot:nth-child(1) { animation-delay: 0s; }
+            .dot:nth-child(2) { animation-delay: 0.2s; }
+            .dot:nth-child(3) { animation-delay: 0.4s; }
+  
+            @keyframes jump {
+              0%, 100% { transform: translateY(0); }
+              50% { transform: translateY(-8px); }
+            }
+          `}
+        </style>
+      </span>
+    );
+  }
+
   return (
     <div
       style={{
@@ -131,16 +159,49 @@ const Dashboard = () => {
         minWidth: "100vw",
         textAlign: "center",
         backgroundColor: "black",
-        color: "white",
+        color: "black",
       }}
     >
-      <div>
+      <div
+        style={{
+          backgroundColor: "white",
+          width: "600px",
+          border: "2px solid red",
+          borderRadius: "10px",
+          paddingBottom: "40px"
+        }}
+      >
         <h2>API Automation Dashboard</h2>
-        <input type="file" onChange={handleFileUpload} disabled={processing} />
-        {message && <p>{message}</p>}
+        <div>
+          <label
+            htmlFor="file-upload"
+            style={{
+              display: "inline-block",
+              padding: "8px 20px",
+              backgroundColor: processing ? "#888" : "#4CAF50",
+              color: "white",
+              borderRadius: "4px",
+              cursor: processing ? "not-allowed" : "pointer",
+              textAlign: "center",
+              fontWeight: "bold",
+            }}
+          >
+            {processing ? "Processing" : "Upload File"} {processing && <LoadingDots />}
+          </label>
+          <input
+            id="file-upload"
+            type="file"
+            onChange={handleFileUpload}
+            disabled={processing}
+            style={{ display: "none" }} // Hide default file input
+          />
+        </div>
+        {message && (
+          <p style={{ fontStyle: "italic", fontWeight: "bold" }}>{message}</p>
+        )}
         {fileUrl && (
           <a href={fileUrl} download="output.xlsx">
-            <button>Download Excel File</button>
+            <button style={{backgroundColor: "#ccc"}}>Download Excel File</button>
           </a>
         )}
         <div>
