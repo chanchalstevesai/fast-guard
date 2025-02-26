@@ -18,25 +18,19 @@ const Dashboard = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  // Run /scrape and /automation every hour
   useEffect(() => {
     const interval = setInterval(async () => {
       try {
         console.log("Running scheduled tasks...");
-
-        // Call /scrape API
         await axios.get(`${API_BASE_URL}/scrape`, axiosConfig);
-
-        // Call /automation API
         await axios.get(`${API_BASE_URL}/automation`, axiosConfig);
-
         console.log("Scheduled tasks completed.");
       } catch (error) {
         console.error("Error in scheduled tasks:", error);
       }
-    }, 60 * 60 * 1000); // Runs every 1 hour
+    }, 60 * 60 * 1000);
 
-    return () => clearInterval(interval); // Cleanup interval on unmount
+    return () => clearInterval(interval);
   }, []);
 
   const handleFileUpload = async (event) => {
@@ -51,16 +45,10 @@ const Dashboard = () => {
     try {
       const formData = new FormData();
       formData.append("file", file);
-
-      // Step 1: Upload File
       await axios.post(`${API_BASE_URL}/upload`, formData, axiosConfig);
       setMessage("File uploaded successfully! Scraping in progress...");
-
-      // Step 2: Scrape API
       await axios.get(`${API_BASE_URL}/scrape`, axiosConfig);
       setMessage("Scraping completed. Fetching output file...");
-
-      // Step 3: Get Output File
       const outputResponse = await axios.get(`${API_BASE_URL}/outputfile`, {
         ...axiosConfig,
         responseType: "blob",
@@ -68,13 +56,10 @@ const Dashboard = () => {
       const url = window.URL.createObjectURL(new Blob([outputResponse.data]));
       setFileUrl(url);
       setMessage("Output file ready! Checking Amazon credentials...");
-
-      // Step 4: Check Amazon Credentials
       const { data } = await axios.get(
         `${API_BASE_URL}/get_amazon_credentials`,
         axiosConfig
       );
-
       if (
         data.message === "No Amazon credentials stored" &&
         data.status === "error"
@@ -100,10 +85,8 @@ const Dashboard = () => {
       setMessage("Please enter both username and password.");
       return;
     }
-
     setProcessing(true);
     setMessage("Saving credentials...");
-
     try {
       await axios.post(
         `${API_BASE_URL}/set_amazon_credentials`,
@@ -111,11 +94,27 @@ const Dashboard = () => {
         axiosConfig
       );
       setMessage("Credentials saved! Running automation...");
-
       await axios.get(`${API_BASE_URL}/automation`, axiosConfig);
       setMessage("Process completed successfully!");
     } catch (error) {
       setMessage(`Error: ${error.response?.data?.error || error.message}`);
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const handleClearCredentials = async () => {
+    setProcessing(true);
+    setMessage("Clearing credentials...");
+    try {
+      await axios.get(`${API_BASE_URL}/clear_amazon_credentials`, axiosConfig);
+      setMessage("Amazon credentials cleared successfully!");
+    } catch (error) {
+      setMessage(
+        `Error clearing credentials: ${
+          error.response?.data?.error || error.message
+        }`
+      );
     } finally {
       setProcessing(false);
     }
@@ -144,6 +143,23 @@ const Dashboard = () => {
             <button>Download Excel File</button>
           </a>
         )}
+        <div>
+          <button
+            onClick={handleClearCredentials}
+            disabled={processing}
+            style={{
+              padding: "10px",
+              backgroundColor: "#4CAF50",
+              color: "white",
+              border: "none",
+              borderRadius: "4px",
+              cursor: processing ? "not-allowed" : "pointer",
+              marginTop: "20px",
+            }}
+          >
+            Clear Credentials
+          </button>
+        </div>
         {showCredentialsForm && (
           <div
             style={{
