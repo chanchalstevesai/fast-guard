@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 
 const API_BASE_URL =
-  "https://5e46-2405-201-3009-d88a-8d21-eba4-f7e7-9136.ngrok-free.app";
+  "https://e156-2405-201-3009-d88a-4178-58b5-23e5-5457.ngrok-free.app";
 
 const axiosConfig = {
   headers: {
@@ -10,10 +10,32 @@ const axiosConfig = {
   },
 };
 
+const retryAutomation = async (setMessage) => {
+  let attempts = 0;
+  while (attempts < 5) {
+    try {
+      setMessage(attempts === 0 ? "Running automation..." : "Automation failed. Retrying...");
+      await axios.get(`${API_BASE_URL}/automation`, axiosConfig);
+      setMessage("Automation completed successfully!");
+      return true;
+    } catch (error) {
+      console.log(error)
+      attempts++;
+      if (attempts >= 5) {
+        setMessage("Automation failed after 5 attempts.");
+        return false;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+    }
+  }
+};
+
+
 const Dashboard = () => {
   const [processing, setProcessing] = useState(false);
   const [message, setMessage] = useState("");
   const [fileUrl, setFileUrl] = useState(null);
+  const [fileUrl1, setFileUrl1] = useState(null);
   const [showCredentialsForm, setShowCredentialsForm] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -23,7 +45,13 @@ const Dashboard = () => {
       try {
         console.log("Running scheduled tasks...");
         await axios.get(`${API_BASE_URL}/scrape`, axiosConfig);
-        await axios.get(`${API_BASE_URL}/automation`, axiosConfig);
+        await retryAutomation(setMessage);
+        const outputResponse = await axios.get(`${API_BASE_URL}/outputfile`, {
+          ...axiosConfig,
+          responseType: "blob",
+        });
+        const url = window.URL.createObjectURL(new Blob([outputResponse.data]));
+        setFileUrl(url);
         console.log("Scheduled tasks completed.");
       } catch (error) {
         console.error("Error in scheduled tasks:", error);
@@ -68,8 +96,24 @@ const Dashboard = () => {
         setShowCredentialsForm(true);
       } else {
         setMessage("Amazon credentials found! Running automation...");
-        await axios.get(`${API_BASE_URL}/automation`, axiosConfig);
-        setMessage("Process completed successfully!");
+        await retryAutomation(setMessage);
+        setMessage("Automation completed. Fetching updated output file...");
+        const outputResponse = await axios.get(`${API_BASE_URL}/outputfile`, {
+          ...axiosConfig,
+          responseType: "blob",
+        });
+        const url = window.URL.createObjectURL(new Blob([outputResponse.data]));
+        setFileUrl(url);
+        setMessage("Fetched output file, fetching input file!");
+        const inputFileResponse = await axios.get(`${API_BASE_URL}/inputfile`, {
+          ...axiosConfig,
+          responseType: "blob",
+        });
+        const url1 = window.URL.createObjectURL(
+          new Blob([inputFileResponse.data])
+        );
+        setFileUrl1(url1);
+        setMessage("Process completed successfully");
       }
     } catch (error) {
       setMessage(
@@ -94,8 +138,24 @@ const Dashboard = () => {
         axiosConfig
       );
       setMessage("Credentials saved! Running automation...");
-      await axios.get(`${API_BASE_URL}/automation`, axiosConfig);
-      setMessage("Process completed successfully!");
+      await retryAutomation(setMessage);
+      setMessage("Automation completed. Fetching updated output file...");
+      const outputResponse = await axios.get(`${API_BASE_URL}/outputfile`, {
+        ...axiosConfig,
+        responseType: "blob",
+      });
+      const url = window.URL.createObjectURL(new Blob([outputResponse.data]));
+      setFileUrl(url);
+      setMessage("Fetched output file, fetching input file!");
+      const inputFileResponse = await axios.get(`${API_BASE_URL}/inputfile`, {
+        ...axiosConfig,
+        responseType: "blob",
+      });
+      const url1 = window.URL.createObjectURL(
+        new Blob([inputFileResponse.data])
+      );
+      setFileUrl1(url1);
+      setMessage("Process completed successfully");
     } catch (error) {
       setMessage(`Error: ${error.response?.data?.error || error.message}`);
     } finally {
@@ -146,7 +206,7 @@ const Dashboard = () => {
         </style>
       </span>
     );
-  }
+  };
 
   return (
     <div
@@ -168,7 +228,7 @@ const Dashboard = () => {
           width: "600px",
           border: "2px solid red",
           borderRadius: "10px",
-          paddingBottom: "40px"
+          paddingBottom: "40px",
         }}
       >
         <h2>API Automation Dashboard</h2>
@@ -186,7 +246,8 @@ const Dashboard = () => {
               fontWeight: "bold",
             }}
           >
-            {processing ? "Processing" : "Upload File"} {processing && <LoadingDots />}
+            {processing ? "Processing" : "Upload File"}{" "}
+            {processing && <LoadingDots />}
           </label>
           <input
             id="file-upload"
@@ -199,11 +260,26 @@ const Dashboard = () => {
         {message && (
           <p style={{ fontStyle: "italic", fontWeight: "bold" }}>{message}</p>
         )}
-        {fileUrl && (
-          <a href={fileUrl} download="output.xlsx">
-            <button style={{backgroundColor: "#ccc"}}>Download Excel File</button>
-          </a>
-        )}
+        <div style={{ margin: "10px 0px" }}>
+          {fileUrl && (
+            <a
+              href={fileUrl}
+              download="output.xlsx"
+              style={{ margin: "0px 10px" }}
+            >
+              <button style={{ backgroundColor: "#ccc" }}>
+                Download Output File
+              </button>
+            </a>
+          )}
+          {fileUrl1 && (
+            <a href={fileUrl1} download="input.xlsx">
+              <button style={{ backgroundColor: "#ccc" }}>
+                Download Input File
+              </button>
+            </a>
+          )}
+        </div>
         <div>
           <button
             onClick={handleClearCredentials}
