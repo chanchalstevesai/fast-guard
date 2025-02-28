@@ -14,12 +14,16 @@ const retryAutomation = async (setMessage) => {
   let attempts = 0;
   while (attempts < 5) {
     try {
-      setMessage(attempts === 0 ? "Running automation..." : "Automation failed. Retrying...");
+      setMessage(
+        attempts === 0
+          ? "Running automation..."
+          : "Automation failed. Retrying..."
+      );
       await axios.get(`${API_BASE_URL}/automation`, axiosConfig);
       setMessage("Automation completed successfully!");
       return true;
     } catch (error) {
-      console.log(error)
+      console.log(error);
       attempts++;
       if (attempts >= 5) {
         setMessage("Automation failed after 5 attempts.");
@@ -29,7 +33,6 @@ const retryAutomation = async (setMessage) => {
     }
   }
 };
-
 
 const Dashboard = () => {
   const [processing, setProcessing] = useState(false);
@@ -45,14 +48,42 @@ const Dashboard = () => {
       try {
         console.log("Running scheduled tasks...");
         await axios.get(`${API_BASE_URL}/scrape`, axiosConfig);
-        await retryAutomation(setMessage);
-        const outputResponse = await axios.get(`${API_BASE_URL}/outputfile`, {
-          ...axiosConfig,
-          responseType: "blob",
-        });
-        const url = window.URL.createObjectURL(new Blob([outputResponse.data]));
-        setFileUrl(url);
-        console.log("Scheduled tasks completed.");
+        const { data } = await axios.get(
+          `${API_BASE_URL}/get_amazon_credentials`,
+          axiosConfig
+        );
+        if (
+          data.message === "No Amazon credentials stored" &&
+          data.status === "error"
+        ) {
+          setMessage("No Amazon credentials found. Please enter them below.");
+          setShowCredentialsForm(true);
+        } else {
+          setMessage("Amazon credentials found! Running automation...");
+          await retryAutomation(setMessage);
+          setMessage("Automation completed. Fetching updated output file...");
+          const outputResponse = await axios.get(`${API_BASE_URL}/outputfile`, {
+            ...axiosConfig,
+            responseType: "blob",
+          });
+          const url = window.URL.createObjectURL(
+            new Blob([outputResponse.data])
+          );
+          setFileUrl(url);
+          setMessage("Fetched output file, fetching input file!");
+          const inputFileResponse = await axios.get(
+            `${API_BASE_URL}/inputfile`,
+            {
+              ...axiosConfig,
+              responseType: "blob",
+            }
+          );
+          const url1 = window.URL.createObjectURL(
+            new Blob([inputFileResponse.data])
+          );
+          setFileUrl1(url1);
+          setMessage("Process completed successfully");
+        }
       } catch (error) {
         console.error("Error in scheduled tasks:", error);
       }
