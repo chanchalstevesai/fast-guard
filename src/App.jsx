@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 
 const API_BASE_URL =
-  "https://c0ec-2405-201-3009-d88a-4c72-e69a-90f8-7a70.ngrok-free.app";
+  "https://febb-2405-201-3009-d88a-8c80-756c-ee71-b938.ngrok-free.app";
 
 const axiosConfig = {
   headers: {
