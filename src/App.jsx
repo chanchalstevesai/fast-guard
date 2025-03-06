@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 
 const API_BASE_URL =
-  "https://febb-2405-201-3009-d88a-8c80-756c-ee71-b938.ngrok-free.app";
+  "https://167f-2405-201-3009-d88a-74a2-fd86-ac31-dede.ngrok-free.app";
 
 const axiosConfig = {
   headers: {
@@ -19,8 +19,10 @@ const retryAutomation = async (setMessage) => {
           ? "Running automation..."
           : "Automation failed. Retrying..."
       );
-      await axios.get(`${API_BASE_URL}/automation`, axiosConfig);
+      // await axios.get(`${API_BASE_URL}/automation`, axiosConfig);
+      await streamAPIResponse(`${API_BASE_URL}/automation`, setMessage);
       setMessage("Automation completed successfully!");
+
       return true;
     } catch (error) {
       console.log(error);
@@ -31,6 +33,33 @@ const retryAutomation = async (setMessage) => {
       }
       await new Promise((resolve) => setTimeout(resolve, 5000));
     }
+  }
+};
+
+const streamAPIResponse = async (url, setMessage) => {
+  try {
+    const response = await fetch(url, axiosConfig);
+
+    if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+
+    setMessage("Processing...");
+
+    while (true) {
+      const { done, value } = await reader.read();
+
+      if (done) break;
+
+      const chunk = decoder
+        .decode(value, { stream: true })
+        .replace("data: ", "");
+
+      setMessage(chunk);
+    }
+  } catch (error) {
+    setMessage(`Error: ${error.message}`);
   }
 };
 
@@ -46,8 +75,10 @@ const Dashboard = () => {
   useEffect(() => {
     const interval = setInterval(async () => {
       try {
-        console.log("Running scheduled tasks...");
-        await axios.get(`${API_BASE_URL}/scrape`, axiosConfig);
+        setMessage("Running scheduled tasks...");
+        await streamAPIResponse(`${API_BASE_URL}/scrape`, setMessage);
+        setMessage("Scraping completed. Fetching output file...");
+
         const { data } = await axios.get(
           `${API_BASE_URL}/get_amazon_credentials`,
           axiosConfig
@@ -104,10 +135,13 @@ const Dashboard = () => {
     try {
       const formData = new FormData();
       formData.append("file", file);
+
       await axios.post(`${API_BASE_URL}/upload`, formData, axiosConfig);
-      setMessage("File uploaded successfully! Scraping in progress...");
-      await axios.get(`${API_BASE_URL}/scrape`, axiosConfig);
+      setMessage("File uploaded successfully! Scraping started...");
+
+      await streamAPIResponse(`${API_BASE_URL}/scrape`, setMessage);
       setMessage("Scraping completed. Fetching output file...");
+
       const outputResponse = await axios.get(`${API_BASE_URL}/outputfile`, {
         ...axiosConfig,
         responseType: "blob",
@@ -115,6 +149,7 @@ const Dashboard = () => {
       const url = window.URL.createObjectURL(new Blob([outputResponse.data]));
       setFileUrl(url);
       setMessage("Output file ready! Checking Amazon credentials...");
+
       const { data } = await axios.get(
         `${API_BASE_URL}/get_amazon_credentials`,
         axiosConfig
@@ -129,6 +164,7 @@ const Dashboard = () => {
         setMessage("Amazon credentials found! Running automation...");
         await retryAutomation(setMessage);
         setMessage("Automation completed. Fetching updated output file...");
+
         const outputResponse = await axios.get(`${API_BASE_URL}/outputfile`, {
           ...axiosConfig,
           responseType: "blob",
@@ -136,6 +172,7 @@ const Dashboard = () => {
         const url = window.URL.createObjectURL(new Blob([outputResponse.data]));
         setFileUrl(url);
         setMessage("Fetched output file, fetching input file!");
+
         const inputFileResponse = await axios.get(`${API_BASE_URL}/inputfile`, {
           ...axiosConfig,
           responseType: "blob",
@@ -170,12 +207,15 @@ const Dashboard = () => {
       );
       setMessage("Credentials saved! Running automation...");
       await retryAutomation(setMessage);
+
       setMessage("Automation completed. Fetching updated output file...");
+
       const outputResponse = await axios.get(`${API_BASE_URL}/outputfile`, {
         ...axiosConfig,
         responseType: "blob",
       });
       const url = window.URL.createObjectURL(new Blob([outputResponse.data]));
+
       setFileUrl(url);
       setMessage("Fetched output file, fetching input file!");
       const inputFileResponse = await axios.get(`${API_BASE_URL}/inputfile`, {

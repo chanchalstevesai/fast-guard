@@ -1,0 +1,25 @@
+.bg_main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    flex-direction: column;
+    min-width: 100vw;
+    text-align: center;
+    background-image: url("/image_bg.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+
+
+/* background-color: white;
+max-width: 800px;
+width: 100%;
+border: 0px solid red;
+border-radius: 10px;
+padding-bottom: 40px;
+box-shadow: 0px 0px 11px #ffffffb5; */
+
+
