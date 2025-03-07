@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import "./style.css";
 
 const API_BASE_URL =
   "https://167f-2405-201-3009-d88a-74a2-fd86-ac31-dede.ngrok-free.app";
@@ -205,6 +206,7 @@ const Dashboard = () => {
         { username, password },
         axiosConfig
       );
+      setShowCredentialsForm(false);
       setMessage("Credentials saved! Running automation...");
       await retryAutomation(setMessage);
 
@@ -280,43 +282,11 @@ const Dashboard = () => {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        minHeight: "100vh",
-        flexDirection: "column",
-        minWidth: "100vw",
-        textAlign: "center",
-        backgroundColor: "black",
-        color: "black",
-      }}
-    >
-      <div
-        style={{
-          backgroundColor: "white",
-          width: "600px",
-          border: "2px solid red",
-          borderRadius: "10px",
-          paddingBottom: "40px",
-        }}
-      >
+    <div className="bg_main">
+      <div className="smell">
         <h2>API Automation Dashboard</h2>
         <div>
-          <label
-            htmlFor="file-upload"
-            style={{
-              display: "inline-block",
-              padding: "8px 20px",
-              backgroundColor: processing ? "#888" : "#4CAF50",
-              color: "white",
-              borderRadius: "4px",
-              cursor: processing ? "not-allowed" : "pointer",
-              textAlign: "center",
-              fontWeight: "bold",
-            }}
-          >
+          <label htmlFor="file-upload">
             {processing ? "Processing" : "Upload File"}{" "}
             {processing && <LoadingDots />}
           </label>
@@ -328,93 +298,41 @@ const Dashboard = () => {
             style={{ display: "none" }} // Hide default file input
           />
         </div>
-        {message && (
-          <p style={{ fontStyle: "italic", fontWeight: "bold" }}>{message}</p>
-        )}
-        <div style={{ margin: "10px 0px" }}>
+        {message && <p>{message}</p>}
+        <div>
           {fileUrl && (
-            <a
-              href={fileUrl}
-              download="output.xlsx"
-              style={{ margin: "0px 10px" }}
-            >
-              <button style={{ backgroundColor: "#ccc" }}>
-                Download Output File
-              </button>
+            <a href={fileUrl} download="output.xlsx">
+              <button>Download Output File</button>
             </a>
           )}
           {fileUrl1 && (
             <a href={fileUrl1} download="input.xlsx">
-              <button style={{ backgroundColor: "#ccc" }}>
-                Download Input File
-              </button>
+              <button>Download Input File</button>
             </a>
           )}
         </div>
-        <div>
-          <button
-            onClick={handleClearCredentials}
-            disabled={processing}
-            style={{
-              padding: "10px",
-              backgroundColor: "#4CAF50",
-              color: "white",
-              border: "none",
-              borderRadius: "4px",
-              cursor: processing ? "not-allowed" : "pointer",
-              marginTop: "20px",
-            }}
-          >
-            Clear Credentials
-          </button>
-        </div>
+        {!processing && (
+          <div>
+            <button onClick={handleClearCredentials} disabled={processing}>
+              Clear Credentials
+            </button>
+          </div>
+        )}
         {showCredentialsForm && (
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "10px",
-              width: "250px",
-              margin: "0 auto",
-              padding: "20px",
-            }}
-          >
+          <div className="smell2">
             <input
               type="text"
               placeholder="Username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              style={{
-                padding: "8px",
-                fontSize: "14px",
-                borderRadius: "4px",
-                border: "1px solid #ccc",
-              }}
             />
             <input
               type="password"
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              style={{
-                padding: "8px",
-                fontSize: "14px",
-                borderRadius: "4px",
-                border: "1px solid #ccc",
-              }}
             />
-            <button
-              onClick={handleSetCredentials}
-              disabled={processing}
-              style={{
-                padding: "10px",
-                backgroundColor: "#4CAF50",
-                color: "white",
-                border: "none",
-                borderRadius: "4px",
-                cursor: processing ? "not-allowed" : "pointer",
-              }}
-            >
+            <button onClick={handleSetCredentials} disabled={processing}>
               Submit
             </button>
           </div>
