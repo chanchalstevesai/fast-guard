@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import "./style.css";
 
 const API_BASE_URL =
-  "https://167f-2405-201-3009-d88a-74a2-fd86-ac31-dede.ngrok-free.app";
+  "https://86da-2405-201-3009-d88a-ece6-66b1-7c1c-fbb9.ngrok-free.app";
 
 const axiosConfig = {
   headers: {
@@ -11,7 +11,7 @@ const axiosConfig = {
   },
 };
 
-const retryAutomation = async (setMessage) => {
+const retryAutomation = async (setMessage, setOtpRequested, otpSubmitted) => {
   let attempts = 0;
   while (attempts < 5) {
     try {
@@ -20,8 +20,12 @@ const retryAutomation = async (setMessage) => {
           ? "Running automation..."
           : "Automation failed. Retrying..."
       );
-      // await axios.get(`${API_BASE_URL}/automation`, axiosConfig);
-      await streamAPIResponse(`${API_BASE_URL}/automation`, setMessage);
+      await streamAPIResponse(
+        `${API_BASE_URL}/automation`,
+        setMessage,
+        setOtpRequested,
+        otpSubmitted
+      );
       setMessage("Automation completed successfully!");
 
       return true;
@@ -37,7 +41,12 @@ const retryAutomation = async (setMessage) => {
   }
 };
 
-const streamAPIResponse = async (url, setMessage) => {
+const streamAPIResponse = async (
+  url,
+  setMessage,
+  setOtpRequested,
+  otpSubmitted
+) => {
   try {
     const response = await fetch(url, axiosConfig);
 
@@ -47,6 +56,9 @@ const streamAPIResponse = async (url, setMessage) => {
     const decoder = new TextDecoder();
 
     setMessage("Processing...");
+    let waitingForOTP = false;
+    const MAX_WAIT_TIME = 60;
+    let elapsedTime = 0;
 
     while (true) {
       const { done, value } = await reader.read();
@@ -57,7 +69,27 @@ const streamAPIResponse = async (url, setMessage) => {
         .decode(value, { stream: true })
         .replace("data: ", "");
 
-      setMessage(chunk);
+      if (chunk.includes("Waiting for OTP submission via API...")) {
+        if (!waitingForOTP) {
+          setMessage("Please Enter OTP sent to your device");
+          setOtpRequested(true);
+          waitingForOTP = true;
+        }
+
+        while (!otpSubmitted.current && elapsedTime < MAX_WAIT_TIME) {
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+          elapsedTime++;
+        }
+
+        if (!otpSubmitted.current) {
+          setOtpRequested(false);
+          setMessage("OTP submission timeout. Please try again.");
+          return;
+        }
+        setMessage("OTP Submitted, Resuming automation...");
+      } else {
+        setMessage(chunk);
+      }
     }
   } catch (error) {
     setMessage(`Error: ${error.message}`);
@@ -72,14 +104,18 @@ const Dashboard = () => {
   const [showCredentialsForm, setShowCredentialsForm] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [otp, setOtp] = useState("");
+  const [otpRequested, setOtpRequested] = useState(false);
+  const otpSubmitted = useRef(false);
+  const [email, setEmail] = useState("");
+  const [showEmailForm, setShowEmailForm] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(async () => {
       try {
         setMessage("Running scheduled tasks...");
+        setProcessing(true);
         await streamAPIResponse(`${API_BASE_URL}/scrape`, setMessage);
-        setMessage("Scraping completed. Fetching output file...");
-
         const { data } = await axios.get(
           `${API_BASE_URL}/get_amazon_credentials`,
           axiosConfig
@@ -92,7 +128,7 @@ const Dashboard = () => {
           setShowCredentialsForm(true);
         } else {
           setMessage("Amazon credentials found! Running automation...");
-          await retryAutomation(setMessage);
+          await retryAutomation(setMessage, setOtpRequested, otpSubmitted);
           setMessage("Automation completed. Fetching updated output file...");
           const outputResponse = await axios.get(`${API_BASE_URL}/outputfile`, {
             ...axiosConfig,
@@ -118,6 +154,8 @@ const Dashboard = () => {
         }
       } catch (error) {
         console.error("Error in scheduled tasks:", error);
+      } finally {
+        setProcessing(false);
       }
     }, 60 * 60 * 1000);
 
@@ -138,11 +176,55 @@ const Dashboard = () => {
       formData.append("file", file);
 
       await axios.post(`${API_BASE_URL}/upload`, formData, axiosConfig);
-      setMessage("File uploaded successfully! Scraping started...");
+      setMessage("Getting email, Please wait...");
 
-      await streamAPIResponse(`${API_BASE_URL}/scrape`, setMessage);
-      setMessage("Scraping completed. Fetching output file...");
+      const emailResponse = await axios.get(
+        `${API_BASE_URL}/get_email`,
+        axiosConfig
+      );
 
+      if (emailResponse.data.message == "No email stored") {
+        setShowEmailForm(true);
+        setMessage("No email found. Please enter your email.");
+        return;
+      }
+
+      await handleAutomation();
+    } catch (error) {
+      setMessage(
+        `Error: ${error.response?.data?.error || "An error occurred."}`
+      );
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const handleSetEmail = async () => {
+    if (!email) {
+      setMessage("Please enter your email.");
+      return;
+    }
+    setProcessing(true);
+    setMessage("Saving email...");
+
+    try {
+      await axios.post(`${API_BASE_URL}/set_email`, { email }, axiosConfig);
+      setShowEmailForm(false);
+      setMessage("Email saved! Proceeding with tasks...");
+      await handleAutomation();
+    } catch (error) {
+      setMessage(
+        `Error saving email: ${error.response?.data?.error || error.message}`
+      );
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const handleAutomation = async () => {
+    setProcessing(true);
+
+    try {
       const outputResponse = await axios.get(`${API_BASE_URL}/outputfile`, {
         ...axiosConfig,
         responseType: "blob",
@@ -163,7 +245,7 @@ const Dashboard = () => {
         setShowCredentialsForm(true);
       } else {
         setMessage("Amazon credentials found! Running automation...");
-        await retryAutomation(setMessage);
+        await retryAutomation(setMessage, setOtpRequested, otpSubmitted);
         setMessage("Automation completed. Fetching updated output file...");
 
         const outputResponse = await axios.get(`${API_BASE_URL}/outputfile`, {
@@ -188,8 +270,6 @@ const Dashboard = () => {
       setMessage(
         `Error: ${error.response?.data?.error || "An error occurred."}`
       );
-    } finally {
-      setProcessing(false);
     }
   };
 
@@ -206,9 +286,9 @@ const Dashboard = () => {
         { username, password },
         axiosConfig
       );
-      setShowCredentialsForm(false);
       setMessage("Credentials saved! Running automation...");
-      await retryAutomation(setMessage);
+      setShowCredentialsForm(false);
+      await retryAutomation(setMessage, setOtpRequested, otpSubmitted);
 
       setMessage("Automation completed. Fetching updated output file...");
 
@@ -253,6 +333,41 @@ const Dashboard = () => {
     }
   };
 
+  const handleOtpSubmit = async () => {
+    if (!otp) {
+      setMessage("Please Enter OTP");
+      return;
+    }
+
+    setMessage("Submitting OTP, Please wait...");
+
+    try {
+      await axios.post(`${API_BASE_URL}/submit_otp`, { otp }, axiosConfig);
+      setOtp("");
+      setOtpRequested(false);
+      otpSubmitted.current = true;
+    } catch (error) {
+      setMessage(
+        `Wrong OTP Entered: ${error.response?.data?.error || error.message}`
+      );
+    }
+  };
+
+  const handleClearEmail = async () => {
+    setProcessing(true);
+    setMessage("Clearing emails...");
+    try {
+      await axios.get(`${API_BASE_URL}/clear_email`, axiosConfig);
+      setMessage("Email cleared successfully!");
+    } catch (error) {
+      setMessage(
+        `Error clearing email: ${error.response?.data?.error || error.message}`
+      );
+    } finally {
+      setProcessing(false);
+    }
+  };
+
   const LoadingDots = () => {
     return (
       <span style={{ display: "inline-flex" }}>
@@ -284,10 +399,10 @@ const Dashboard = () => {
   return (
     <div className="bg_main">
       <div className="smell">
-        <h2>API Automation Dashboard</h2>
+        <h2>Amazon Automation Dashboard</h2>
         <div>
           <label htmlFor="file-upload">
-            {processing ? "Processing" : "Upload File"}{" "}
+            {processing ? "Processing" : "Upload File"}
             {processing && <LoadingDots />}
           </label>
           <input
@@ -316,6 +431,10 @@ const Dashboard = () => {
             <button onClick={handleClearCredentials} disabled={processing}>
               Clear Credentials
             </button>
+
+            <button onClick={handleClearEmail} disabled={processing}>
+              Clear Email
+            </button>
           </div>
         )}
         {showCredentialsForm && (
@@ -335,6 +454,30 @@ const Dashboard = () => {
             <button onClick={handleSetCredentials} disabled={processing}>
               Submit
             </button>
+          </div>
+        )}
+        {showEmailForm && (
+          <div className="smell2">
+            <input
+              type="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <button onClick={handleSetEmail} disabled={processing}>
+              Submit Email
+            </button>
+          </div>
+        )}
+        {otpRequested && (
+          <div className="smell2">
+            <input
+              type="text"
+              placeholder="Enter OTP"
+              value={otp}
+              onChange={(e) => setOtp(e.target.value)}
+            />
+            <button onClick={handleOtpSubmit}>Submit OTP</button>
           </div>
         )}
       </div>
