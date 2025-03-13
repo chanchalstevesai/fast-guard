@@ -225,6 +225,8 @@ const Dashboard = () => {
     setProcessing(true);
 
     try {
+      await streamAPIResponse(`${API_BASE_URL}/scrape`, setMessage);
+
       const outputResponse = await axios.get(`${API_BASE_URL}/outputfile`, {
         ...axiosConfig,
         responseType: "blob",
