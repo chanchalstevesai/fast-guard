@@ -3,7 +3,7 @@ import axios from "axios";
 import "./style.css";
 
 const API_BASE_URL =
-  "https://86da-2405-201-3009-d88a-ece6-66b1-7c1c-fbb9.ngrok-free.app";
+  "https://5a2c-2405-201-3009-d88a-3c7a-e787-52c4-cea5.ngrok-free.app";
 
 const axiosConfig = {
   headers: {
@@ -57,7 +57,7 @@ const streamAPIResponse = async (
 
     setMessage("Processing...");
     let waitingForOTP = false;
-    const MAX_WAIT_TIME = 60;
+    const MAX_WAIT_TIME = 180;
     let elapsedTime = 0;
 
     while (true) {
@@ -162,8 +162,17 @@ const Dashboard = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const handleFileUpload = async (event) => {
-    const file = event.target.files[0];
+  const handleFileUpload = async (fileOrEvent) => {
+    let file;
+
+    if (fileOrEvent.target) {
+      // get file when uploaded through an input
+      file = fileOrEvent.target.files[0];
+    } else {
+      // get file when using drag-and-drop file
+      file = fileOrEvent;
+    }
+
     if (!file) return;
 
     setProcessing(true);
@@ -398,24 +407,46 @@ const Dashboard = () => {
     );
   };
 
+  // Drag-and-Drop Handlers
+  const handleDragOver = (event) => {
+    event.preventDefault(); // Prevent default behavior (opening file in browser)
+  };
+
+  const handleDrop = (event) => {
+    event.preventDefault();
+    const file = event.dataTransfer.files[0];
+    handleFileUpload(file);
+  };
+
   return (
     <div className="bg_main">
       <div className="smell">
         <h2>Amazon Automation Dashboard</h2>
-        <div>
-          <label htmlFor="file-upload">
-            {processing ? "Processing" : "Upload File"}
-            {processing && <LoadingDots />}
-          </label>
-          <input
-            id="file-upload"
-            type="file"
-            onChange={handleFileUpload}
-            disabled={processing}
-            style={{ display: "none" }} // Hide default file input
-          />
+        <div className="file-upload-div">
+          <div
+            className="drag_drop"
+            onDragOver={handleDragOver}
+            onDrop={handleDrop}
+          >
+            <img src="./files.svg" alt="" />
+            <p>Drag & Drop your file here</p>
+          </div>
+          <p className="drag-and-drop-line">OR</p>
+          <div>
+            <label htmlFor="file-upload">
+              {processing ? "Processing" : "Browse Files"}
+              {processing && <LoadingDots />}
+            </label>
+            <input
+              id="file-upload"
+              type="file"
+              onChange={handleFileUpload}
+              disabled={processing}
+              style={{ display: "none" }} // Hide default file input
+            />
+          </div>
         </div>
-        {message && <p>{message}</p>}
+        {message && <p style={{ marginTop: "10px" }}>{message}</p>}
         <div>
           {fileUrl && (
             <a href={fileUrl} download="output.xlsx">

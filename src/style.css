@@ -167,11 +167,37 @@ body {
     transition: 0.5s;
 }
 
+.file-upload-div {
+    border: 1px dashed #ccc;
+    border-radius: 10px;
+    text-align: center;
+}
 
+p.drag-and-drop-line {
+    position: relative;
+}
 
+p.drag-and-drop-line:before {
+    position: absolute;
+    content: "";
+    width: calc(45% - 150px);
+    height: 1px;
+    background: rgb(255, 255, 255);
+    top: 14px;
+    right: 0;
+    margin-right: 150px;
+}
 
-
-
+p.drag-and-drop-line:after {
+    position: absolute;
+    content: "";
+    width: calc(45% - 150px);
+    height: 1px;
+    background: rgb(255, 255, 255);
+    top: 14px;
+    left: 0;
+    margin-left: 150px;
+}
 
 @media only screen and (max-width: 991px) {
     .smell {
