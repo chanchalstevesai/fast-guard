@@ -86,7 +86,7 @@ const Dashboard = () => {
     if (!file) return;
 
     setProcessing(true);
-    setMessage("Uploading file...");
+    setMessage("Uploading file, please wait...");
 
     try {
       const formData = new FormData();
@@ -189,9 +189,13 @@ const Dashboard = () => {
       setOutputFileUrl(outputFileUrl);
       setMessage("Output file is ready! automation started...");
 
-      await retryAutomation(setMessage, setOtpRequested, otpSubmitted);
-      setMessage("Automation completed. Fetching updated output file...");
-
+      const automationResponse = await retryAutomation(
+        "/automation",
+        setMessage,
+        setOtpRequested,
+        otpSubmitted
+      );
+      setMessage("Fetching updated output file...");
       const newOutputResponse = await api.get("/outputfile", {
         responseType: "blob",
       });
@@ -205,7 +209,9 @@ const Dashboard = () => {
       const inputFileUrl = convertBlobToURL(inputFileResponse);
       setInputFileUrl(inputFileUrl);
 
-      setMessage("Process completed successfully");
+      setMessage(
+        automationResponse.message || "Process completed successfully"
+      );
     } catch (error) {
       setMessage(`Error: ${error}`);
     } finally {
@@ -282,12 +288,12 @@ const Dashboard = () => {
     <div className="bg_main">
       <div className="smell">
         <h2>Amazon Automation Dashboard</h2>
-        <div className="file-upload-div">
-          <div
-            className="drag_drop"
-            onDragOver={handleDragOver}
-            onDrop={handleDrop}
-          >
+        <div
+          className="file-upload-div"
+          onDragOver={handleDragOver}
+          onDrop={handleDrop}
+        >
+          <div className="drag_drop">
             <img src="./files.svg" alt="" />
             <p>Drag & Drop your file here</p>
           </div>

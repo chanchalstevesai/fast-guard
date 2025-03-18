@@ -1,7 +1,7 @@
 import axios from "axios";
 
-export const API_BASE_URL =
-    "https://5a2c-2405-201-3009-d88a-3c7a-e787-52c4-cea5.ngrok-free.app";
+const API_BASE_URL =
+    "https://58d4-2405-201-3009-d88a-f8c1-5d25-c193-4ad0.ngrok-free.app";
 
 const axiosConfigForFetch = {
     headers: {
@@ -41,7 +41,7 @@ export const streamAPIResponse = async (
     otpSubmitted = null
 ) => {
     try {
-        const response = await fetch(url, axiosConfigForFetch);
+        const response = await fetch(`${API_BASE_URL}${url}`, axiosConfigForFetch);
 
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 
@@ -50,7 +50,7 @@ export const streamAPIResponse = async (
 
         setMessage("Processing...");
         let waitingForOTP = false;
-        const MAX_WAIT_TIME = 60;
+        const MAX_WAIT_TIME = 180;
         let elapsedTime = 0;
 
         while (true) {
@@ -85,12 +85,14 @@ export const streamAPIResponse = async (
             }
         }
     } catch (error) {
-        setMessage(`Error: ${error.response?.data?.message || error.response?.data || error.message}`);
+        // setMessage(`Error: ${error.response?.data?.message || error.response?.data || error.message}`);
+        // console.log("error", error);
+        throw (error.response?.data?.message || error.response?.data || error.message);
     }
 };
 
 // Calls automation API 5 times
-export const retryAutomation = async (setMessage, setOtpRequested, otpSubmitted) => {
+export const retryAutomation = async (url, setMessage, setOtpRequested, otpSubmitted) => {
     let attempts = 0;
     while (attempts < 5) {
         try {
@@ -100,18 +102,23 @@ export const retryAutomation = async (setMessage, setOtpRequested, otpSubmitted)
                     : `Automation failed. Retrying ${attempts + 1}...`
             );
             await streamAPIResponse(
-                `${API_BASE_URL}/automation`,
+                url,
                 setMessage,
                 setOtpRequested,
                 otpSubmitted
             );
-            return true;
+            return { "status": true, "message": "Automation completed." };
         } catch (error) {
-            console.log(error);
             attempts++;
+
+            if (error === "OTP submission timeout. Please re-initiate the process.") {
+                console.log("nsted Error if");
+                return { "status": false, "message": "OTP submission timeout. Please re-initiate the process." }
+            }
+
             if (attempts >= 5) {
-                setMessage("Automation failed after 5 attempts.");
-                return false;
+                // setMessage("Automation failed after 5 attempts.");
+                return { "status": false, "message": "Automation failed after 5 attempts." }
             }
             await new Promise((resolve) => setTimeout(resolve, 5000));
         }
