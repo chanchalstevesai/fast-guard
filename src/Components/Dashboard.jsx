@@ -28,7 +28,7 @@ const Dashboard = () => {
       setProcessing(true);
       setMessage("Running scheduled tasks...");
       try {
-        const inputFileResponse = await api.get("/inputfle", {
+        const inputFileResponse = await api.get("/inputfile", {
           responseType: "blob",
         });
 
@@ -285,103 +285,149 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="bg_main">
-      <div className="smell">
-        <h2>Amazon Automation Dashboard</h2>
-        <div
-          className="file-upload-div"
-          onDragOver={handleDragOver}
-          onDrop={handleDrop}
-        >
-          <div className="drag_drop">
-            <img src="./files.svg" alt="" />
-            <p>Drag & Drop your file here</p>
-          </div>
-          <p className="drag-and-drop-line">OR</p>
-          <div>
-            <label htmlFor="file-upload">
-              {processing ? "Processing" : "Browse Files"}
-              {processing && <Loader />}
-            </label>
-            <input
-              id="file-upload"
-              type="file"
-              onChange={handleFileUpload}
-              disabled={processing}
-              style={{ display: "none" }} // Hide default file input
-            />
-          </div>
-        </div>
-        {message && <p>{message}</p>}
-        <div>
-          {outputFileUrl && (
-            <a href={outputFileUrl} download="output.xlsx">
-              <button>Download Output File</button>
-            </a>
-          )}
-          {inputFileUrl && (
-            <a href={inputFileUrl} download="input.xlsx">
-              <button>Download Input File</button>
-            </a>
-          )}
-        </div>
-        {!processing && (
-          <div>
-            <button onClick={handleClearCredentials} disabled={processing}>
-              Clear Credentials
-            </button>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-white/50 to-gray-900 p-4 dark:bg-gray-700">
+      <h2 className="text-3xl font-bold mb-6 text-gray-800 dark:text-white">
+        Amazon Automation Dashboard
+      </h2>
 
-            <button onClick={handleClearEmail} disabled={processing}>
-              Clear Email
-            </button>
-          </div>
+      <div
+        className="w-full max-w-xl border border-dashed border-gray-400 rounded-lg p-6 mb-4 bg-white dark:bg-gray-700"
+        onDragOver={handleDragOver}
+        onDrop={handleDrop}
+      >
+        <div className="flex flex-col items-center">
+          <img src="./files.svg" alt="Upload" className="mb-2 w-16 h-16" />
+          <p className="text-gray-700 dark:text-gray-200 mb-4">
+            Drag & Drop your file here
+          </p>
+        </div>
+        <p className="text-center text-gray-600 dark:text-gray-300 mb-4">OR</p>
+        <div className="text-center">
+          <label
+            htmlFor="file-upload"
+            className="cursor-pointer inline-block bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+          >
+            {processing ? "Processing" : "Browse Files"}
+            {processing && <Loader />}
+          </label>
+          <input
+            id="file-upload"
+            type="file"
+            onChange={handleFileUpload}
+            disabled={processing}
+            className="hidden"
+          />
+        </div>
+      </div>
+
+      {message && (
+        <p className="mb-4 text-gray-800 dark:text-gray-100">{message}</p>
+      )}
+
+      <div className="flex space-x-4 mb-4">
+        {outputFileUrl && (
+          <a
+            href={outputFileUrl}
+            download="output.xlsx"
+            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+          >
+            Download Output File
+          </a>
         )}
-        {showCredentialsForm && (
-          <div className="smell2">
-            <input
-              type="text"
-              placeholder="Username"
-              name="username"
-              value={amazonCredentials.username}
-              onChange={handleChange}
-            />
-            <input
-              type="password"
-              placeholder="Password"
-              name="password"
-              value={amazonCredentials.password}
-              onChange={handleChange}
-            />
-            <button onClick={handleSetCredentials} disabled={processing}>
-              Submit
-            </button>
-          </div>
-        )}
-        {showEmailForm && (
-          <div className="smell2">
-            <input
-              type="email"
-              placeholder="Enter your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <button onClick={handleSetEmail} disabled={processing}>
-              Submit Email
-            </button>
-          </div>
-        )}
-        {otpRequested && (
-          <div className="smell2">
-            <input
-              type="text"
-              placeholder="Enter OTP"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
-            />
-            <button onClick={handleOtpSubmit}>Submit OTP</button>
-          </div>
+        {inputFileUrl && (
+          <a
+            href={inputFileUrl}
+            download="input.xlsx"
+            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+          >
+            Download Input File
+          </a>
         )}
       </div>
+
+      {!processing && (
+        <div className="flex space-x-4 mb-4">
+          <button
+            onClick={handleClearCredentials}
+            disabled={processing}
+            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
+          >
+            Clear Credentials
+          </button>
+          <button
+            onClick={handleClearEmail}
+            disabled={processing}
+            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
+          >
+            Clear Email
+          </button>
+        </div>
+      )}
+
+      {showCredentialsForm && (
+        <div className="w-full max-w-md bg-white dark:bg-gray-700 p-4 rounded mb-4">
+          <input
+            type="text"
+            placeholder="Username"
+            name="username"
+            value={amazonCredentials.username}
+            onChange={handleChange}
+            className="w-full p-2 mb-2 border rounded"
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            name="password"
+            value={amazonCredentials.password}
+            onChange={handleChange}
+            className="w-full p-2 mb-2 border rounded"
+          />
+          <button
+            onClick={handleSetCredentials}
+            disabled={processing}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white p-2 rounded"
+          >
+            Submit
+          </button>
+        </div>
+      )}
+
+      {showEmailForm && (
+        <div className="w-full max-w-md bg-white dark:bg-gray-700 p-4 rounded mb-4">
+          <input
+            type="email"
+            placeholder="Enter your email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full p-2 mb-2 border rounded"
+          />
+          <button
+            onClick={handleSetEmail}
+            disabled={processing}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white p-2 rounded"
+          >
+            Submit Email
+          </button>
+        </div>
+      )}
+
+      {otpRequested && (
+        <div className="w-full max-w-md bg-white dark:bg-gray-700 p-4 rounded">
+          <input
+            type="text"
+            placeholder="Enter OTP"
+            value={otp}
+            onChange={(e) => setOtp(e.target.value)}
+            className="w-full p-2 mb-2 border rounded"
+          />
+          <button
+            onClick={handleOtpSubmit}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white p-2 rounded"
+          >
+            Submit OTP
+          </button>
+        </div>
+      )}
     </div>
   );
 };
