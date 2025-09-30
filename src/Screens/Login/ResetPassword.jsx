@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { resetPasswordRequest } from '../../Networking/APIs/ResetPasswordApi';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -13,7 +14,7 @@ export const ResetPassword = () => {
   const navigate = useNavigate();
 
   // --- State Management ---
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -30,8 +31,8 @@ export const ResetPassword = () => {
     setLoading(true);
 
     try {
-      const res = await axios.post(BaseURl + 'reset-password', {
-        username,
+      const res = await resetPasswordRequest({
+        email,
         old_password: oldPassword,
         new_password: newPassword,
       });
@@ -66,14 +67,14 @@ export const ResetPassword = () => {
 
           <form onSubmit={handleSubmit}>
             <div className="mb-3">
-              <label htmlFor="username" className="form-label fw-medium">Username</label>
+              <label htmlFor="email" className="form-label fw-medium">Email</label>
               <input
-                type="text"
+                type="email"
                 className="form-control"
-                id="username"
-                placeholder="Enter username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                id="email"
+                placeholder="Enter email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
                 disabled={loading}
               />

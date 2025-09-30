@@ -1,12 +1,14 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import { BaseURl } from "./NWconfig";
 
 export const signupUser = createAsyncThunk(
   "signup/signupUser",
   async (userData, thunkAPI) => {
     try {
+      
       const response = await axios.post(
-        "https://f0b8191f1575.ngrok-free.app/add_member",
+        BaseURl +  "/add_member",
         { ...userData, role: "member" },
         {
           headers: {

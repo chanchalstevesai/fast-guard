@@ -10,7 +10,7 @@ export const Dashboard = () => {
   const navigate = useNavigate();
 
   const { data } = useSelector((state) => state.userListSlice);
-  console.log(data, "data in dashboard");
+  // console.log(data, "data in dashboard");
 
   const [loading, setLoading] = useState(true);
   const [selectedCountry, setSelectedCountry] = useState("");
@@ -64,16 +64,16 @@ const handleAddMember = () => navigate("/signup");
 
   return (
     <div
-      className="p-5 d-flex flex-col justify-content-center"
+      className="p-5 d-flex justify-content-center"
       style={{
         background: "linear-gradient(135deg, #fffbe6, #f7e0b5)",
         minHeight: "100vh",
       }}
     >
  <div>
-  <button onClick={handleAddMember} className="px-3 py-2 mb-4 btn btn-warning" style={{ borderRadius: "8px", fontWeight: "600" }}>
+  {/* <button onClick={handleAddMember} className="px-3 py-2 mb-4 btn btn-warning" style={{ borderRadius: "8px", fontWeight: "600" }}>
   Add Member
-  </button>
+  </button> */}
 
 </div>
       <div className="card w-100 shadow" style={{ borderRadius: "12px", maxWidth: "1200px" }}>

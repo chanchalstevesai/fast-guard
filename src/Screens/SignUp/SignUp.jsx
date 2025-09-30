@@ -9,12 +9,12 @@ const SignUp = () => {
   const dispatch = useDispatch();
   const [form, setForm] = useState({ email: "", password: "" });
   const { list: members, loading } = useSelector((state) => state.members);
-  console.log("Members from Redux:", members);  
+  console.log("Members from Redux:", members);
 
 
 
   useEffect(() => {
-    dispatch(getMembers()); 
+    dispatch(getMembers());
   }, [dispatch]);
 
   const handleChange = (e) => {
@@ -26,19 +26,19 @@ const SignUp = () => {
     try {
       await dispatch(signupUser(form)).unwrap();
       setForm({ email: "", password: "" });
-      dispatch(getMembers()); 
+      dispatch(getMembers());
     } catch (error) {
       console.error("Signup failed:", error);
     }
   };
 
-const handleDeleteMember = (id) => {
-  if (window.confirm("Are you sure you want to delete this member?")) {
-    dispatch(deleteMember(id)).then(() => {
-      dispatch(getMembers()); 
-    });
-  }
-};
+  const handleDeleteMember = (id) => {
+    if (window.confirm("Are you sure you want to delete this member?")) {
+      dispatch(deleteMember(id)).then(() => {
+        dispatch(getMembers());
+      });
+    }
+  };
 
 
   return (
@@ -100,26 +100,26 @@ const handleDeleteMember = (id) => {
           {loading ? (
             <p>Loading members...</p>
           ) : (
-            
+
             <ul className="list-group mt-4 shadow-sm rounded">
-  {Array.isArray(members) && members.map((m) => (
-    <li 
-      key={m.id} 
-      className="list-group-item d-flex justify-content-between align-items-center"
-    >
-      <div>
-        <span className="fw-bold text-dark">{m.email}</span>
-        <small className="ms-2 text-muted">({m.role})</small>
-      </div>
-      <button
-        className="btn btn-sm btn-outline-danger"
-         onClick={() => handleDeleteMember(m.id)}
-      >
-        <i className="bi bi-trash me-1"></i>
-      </button>
-    </li>
-  ))}
-</ul> 
+              {Array.isArray(members) && members.map((m) => (
+                <li
+                  key={m.id}
+                  className="list-group-item d-flex justify-content-between align-items-center"
+                >
+                  <div>
+                    <span className="fw-bold text-dark">{m.email}</span>
+                    <small className="ms-2 text-muted">({m.role})</small>
+                  </div>
+                  <button
+                    className="btn btn-sm btn-outline-danger"
+                    onClick={() => handleDeleteMember(m.id)}
+                  >
+                    <i className="bi bi-trash me-1"></i>
+                  </button>
+                </li>
+              ))}
+            </ul>
           )}
         </div>
       </div>

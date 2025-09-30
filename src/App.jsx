@@ -33,7 +33,7 @@ const App = () => {
             <Route path="/" element={<BasicForm />} />
             <Route path="/subcontractor" element={<QuotationForm1 />} />
             <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
-            <Route path="/Reset_password" element={<PublicRoute><ResetPassword /></PublicRoute>} />
+            <Route path="/Reset_password" element={<PrivateRoute><ResetPassword /></PrivateRoute>} />
             <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
             <Route path="/UserDetailView/:id" element={<PrivateRoute><UserDetailView /></PrivateRoute>} />
             <Route path="/ApprovedList" element={<PrivateRoute><ApprovedListComponent /></PrivateRoute>} />
@@ -42,6 +42,7 @@ const App = () => {
             <Route path="/NotApprovedView" element={<PrivateRoute><NotApprovedView /></PrivateRoute>} />
             <Route path="/GuardPriceList" element={<PrivateRoute><GuardPriceList /></PrivateRoute>} />
             <Route path="/signup" element={<PrivateRoute><SignUp /></PrivateRoute>} />
+            
             </Routes>
         </div>
       </Router>
