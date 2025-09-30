@@ -1,0 +1,398 @@
+/* Updated CSS to fix the alignment issue with Same as Billing checkbox */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+}
+
+.modal-content {
+    background-color: white;
+    border-radius: 12px;
+    padding: 0;
+    max-width: 800px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.quotation-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    
+}
+
+/* New header styling based on SVG */
+.quotation-form h2 {
+    text-align: center;
+    color: black;
+    background-color: #D2A52E;
+    margin: 0;
+    padding: 1.5rem 2rem;
+    font-size: 2rem;
+    font-weight: bold;
+    border-radius: 12px 12px 0 0;
+}
+
+/* Form content container */
+.form-content {
+    padding: 2rem;
+}
+
+.form-field {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.form-field label {
+    font-weight: 600;
+    color: #2D3748;
+    font-size: 0.95rem;
+}
+
+/* Required field asterisk styling */
+.form-field label::after {
+    content: '*';
+    color: #E53E3E;
+    margin-left: 4px;
+}
+
+/* Fields that aren't required shouldn't show the asterisk */
+.form-field.optional label::after {
+    content: '';
+}
+
+.checkbox-field label::after {
+    content: '';
+}
+
+
+.sub-heading {
+    font-weight: 600;
+    color: #2D3748;
+    font-size: 0.95rem;
+    margin-bottom: 10px;
+    padding: 8px 15px;
+    background-color: #EDF2F7;
+    border-radius: 6px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.form-row-boxes-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    align-items: stretch;
+    justify-content: center;
+    width: 100%;
+}
+
+.form-row-box {
+    gap: 1.5rem;
+    padding: 1.5rem;
+    border: 1px solid #e0e4e8;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    width: 100%;
+    position: relative;  /* Added for absolute positioning of checkbox */
+}
+
+.input_field {
+    margin-bottom: 10px;
+}
+
+/* Fixed checkbox positioning */
+.checkbox-field {
+    position: absolute;
+    top: 0;
+    right: 10px;
+    margin: 0;
+    padding: 0;
+    height: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.checkbox-field label {
+    display: flex;
+    align-items: center;
+    font-size: 0.8rem;
+    font-weight: normal;
+    margin: 0;
+}
+
+.checkbox {
+    margin-right: 5px;
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    border: 1px solid #718096;
+}
+
+.checkbox:checked {
+    background-color: #3182CE;
+    border-color: #3182CE;
+}
+
+.form-field input[type="text"],
+.form-field input[type="email"],
+.form-field input[type="tel"],
+.form-field input[type="number"],
+.form-field input[type="date"],
+.form-field input[type="time"],
+.form-field input[type="datetime-local"],
+.form-field select,
+.form-field textarea {
+    padding: 0.75rem;
+    border: 1px solid #CBD5E0;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+    background-color: #fff;
+    height: 48px;
+}
+
+.form-field textarea {
+    height: 90px;
+    resize: vertical;
+}
+
+.form-field input:focus,
+.form-field select:focus,
+.form-field textarea:focus {
+    outline: none;
+    border-color: #3182CE;
+    box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+}
+
+.form-field input::placeholder,
+.form-field textarea::placeholder {
+    color: #A0AEC0;
+}
+
+/* Date and time input styling */
+.form-field input[type="date"],
+.form-field input[type="time"] {
+    position: relative;
+    cursor: pointer;
+}
+
+.form-field input[type="date"]::placeholder,
+.form-field input[type="time"]::placeholder {
+    color: #A0AEC0;
+}
+
+/* Custom styling for select dropdown arrow */
+.form-field select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='5' viewBox='0 0 10 5'%3E%3Cpath fill='%23718096' d='M0 0 L10 0 L5 5 Z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 10px 5px;
+    padding-right: 2.5rem;
+}
+
+.required-note {
+    color: #718096;
+    font-size: 0.9rem;
+    font-style: italic;
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 1.5rem;
+    padding-bottom: 2rem;
+}
+
+/* Updated styling for submit button to match SVG */
+.submit-btn {
+    background-color: #3182CE;
+    color: white;
+    border: none;
+    padding: 0.9rem 2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+}
+
+.close-btn {
+    background-color: #E53E3E;
+    color: white;
+    border: none;
+    padding: 0.9rem 2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.submit-btn:hover {
+    background-color: #2C5282;
+}
+
+.close-btn:hover {
+    background-color: #C53030;
+}
+
+/* Responsive styling */
+@media (max-width: 768px) {
+    .modal-content {
+        width: 95%;
+        padding: 0;
+    }
+
+    .form-content {
+        padding: 1.5rem 1rem;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .submit-btn,
+    .close-btn {
+        width: 100%;
+    }
+}
+
+/* Form validation styling */
+.form-field input:invalid {
+    border-color: #E53E3E;
+}
+
+.form-field input:valid:not(:placeholder-shown) {
+    border-color: #2ECC71;
+}
+
+.form-field input[type="tel"]::placeholder {
+    color: #A0AEC0;
+}
+
+.form-field .input-hint {
+    font-size: 0.85rem;
+    color: #718096;
+    margin-top: 0.25rem;
+}
+
+/* Location suggestion styling */
+.suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    max-height: 200px;
+    background: white;
+    border: 1px solid #CBD5E0;
+    border-radius: 6px;
+    overflow-y: auto;
+    list-style: none;
+    padding: 0;
+    margin-top: 5px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.suggestions li {
+    padding: 10px;
+    cursor: pointer;
+    color: #2D3748;
+    transition: background 0.3s ease-in-out;
+}
+
+.suggestions li:hover {
+    background: #EDF2F7;
+}
+
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(0, 0, 0, 0.1);
+    border-top-color: #3182CE;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+}
+
+.form-field-redio{
+    margin-left: 10px
+}
+.loader-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.6); /* or darker like rgba(0,0,0,0.5) */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999; /* high z-index to stay on top */
+  }
+
+  
+  .loader {
+    width: fit-content;
+    font-size: 40px;
+    font-family: system-ui, sans-serif;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #0000;
+    -webkit-text-stroke: 1px #D2A52E;
+    background: conic-gradient(#D2A52E 0 0) 0/0% 100% no-repeat text;
+    animation: l1 1s linear infinite;
+  }
+  
+  .loader:before {
+    content: "Fast Guard";
+  }
+  @keyframes l1 {
+    to{background-size: 120% 100%}
+  }
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

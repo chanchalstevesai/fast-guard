@@ -76,3 +76,86 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 } */
+
+/* .card-hover:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0.5rem 1.2rem rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease-in-out;
+}
+
+.card-hover:hover {
+  transform: scale(1.03);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+} */
+
+
+/* navbar css */
+.nav-hover-link {
+  position: relative;
+  color: rgb(212, 165, 46);
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease-in-out;
+}
+
+.nav-hover-link::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 2px;
+  left: 0;
+  bottom: -2px;
+  background-color: rgb(212, 165, 46);
+  /* Gold */
+  transition: width 0.3s ease-in-out;
+}
+
+.nav-hover-link:hover::after {
+  width: 100%;
+}
+
+.nav-hover-link:hover {
+  color: rgb(212, 165, 46);
+  transform: scale(1.05);
+  /* text-shadow: 0 0 5px rgba(212, 165, 46, 0.6); */
+}
+
+/* Active link style */
+.nav-hover-link.active {
+  color: rgb(212, 165, 46);
+}
+
+.nav-hover-link.active::after {
+  width: 100%;
+}
+
+
+.nav-hover-link.text-danger:hover {
+  color: #dc3545;
+  transform: scale(1.05);
+  /* text-shadow: 0 0 6px rgba(255, 0, 0, 0.5); */
+}
+
+.nav-hover-link i {
+  transition: transform 0.2s ease-in-out;
+}
+
+.nav-hover-link:hover i {
+  transform: translateX(4px);
+}
+
+.nav-item:hover {
+  text-decoration: underline;
+  color: #0d6efd !important;
+}
+
+
+
+.modal.show {
+  backdrop-filter: brightness(0.5);
+}
+
+
+ .approved_card .card-text, .approved_card .card-subtitle {
+    word-break: break-word;
+}

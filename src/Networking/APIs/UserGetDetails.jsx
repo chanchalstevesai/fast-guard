@@ -1,0 +1,97 @@
+import { createAsyncThunk } from '@reduxjs/toolkit';
+import axios from 'axios';
+import { BaseURl, Notes, userDetail } from './NWconfig';
+import { toast } from 'react-toastify';
+
+export const GetuserList = createAsyncThunk(
+  'get/GetuserList',
+  async (_, thunkAPI) => {
+    try {
+      const token = localStorage.getItem('token');
+      //   console.log(token, "token");
+
+      const response = await axios.get(
+        BaseURl + "all-security-guards",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "ngrok-skip-browser-warning": "true",
+          }
+        }
+      );
+      //   console.log(response.data, "response");
+      if (response.status === 200) {
+        return Promise.resolve(response.data.data);
+      } else {
+        return Promise.reject("Unexpected response status");
+      }
+    } catch (error) {
+      return Promise.reject(thunkAPI.rejectWithValue(error.response?.data || error.message));
+    }
+  }
+);
+
+export const GetuserDetail = createAsyncThunk(
+  'get/GetuserDetail',
+  async ({ id }, thunkAPI) => {
+    try {
+      const token = localStorage.getItem('token');
+
+      const url = new URL(BaseURl + userDetail);
+      
+      if (id) {
+        url.searchParams.append("id", id);
+      }
+
+      // console.log(url.toString(), "📌 Final request URL");
+
+      const response = await axios.get(url.toString(), {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "ngrok-skip-browser-warning": "true",
+        }
+      });
+
+      // console.log(response, "✅ API response");
+
+      if (response.status === 200) {
+        return response.data.data;
+      } else {
+        return thunkAPI.rejectWithValue("Unexpected response status");
+      }
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
+export const NotesDetailSubmit = createAsyncThunk(
+  'get/NotesDetailSubmit',
+  async (data , thunkAPI) => {
+    try {
+      console.log(data,"data");
+      
+      const token = localStorage.getItem('token');
+
+      const url = new URL(BaseURl + Notes);
+
+      const response = await axios.put(url,data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "ngrok-skip-browser-warning": "true",
+        }
+      });
+
+      console.log(response.data, "API response");
+
+      if (response.status === 200) {
+        toast.success(response.data.message)
+        return response.data.data;
+      } else {
+        return thunkAPI.rejectWithValue("Unexpected response status");
+      }
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);

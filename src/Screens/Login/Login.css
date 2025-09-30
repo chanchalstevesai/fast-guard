@@ -1,0 +1,35 @@
+/* --- Base styles for the animation containers --- */
+.slide-in-left,
+.slide-in-right,
+.slide-in-top {
+  opacity: 0;
+  transition: transform 0.7s ease-out, opacity 0.7s ease-out;
+}
+
+/* Slide from left */
+.slide-in-left {
+  transform: translateX(-100%);
+}
+
+/* Slide from right */
+.slide-in-right {
+  transform: translateX(100%);
+}
+
+/* 🔼 Slide from top */
+.slide-in-top {
+  transform: translateY(-100%);
+}
+
+/* When element becomes visible */
+.slide-in-left.visible,
+.slide-in-right.visible,
+.slide-in-top.visible {
+  opacity: 1;
+  transform: translateX(0); /* Overridden by translateY for top */
+}
+
+/* Override specifically for top to reset Y-axis */
+.slide-in-top.visible {
+  transform: translateY(0);
+}

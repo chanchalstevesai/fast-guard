@@ -440,28 +440,39 @@ function App() {
     let weekdayHours = 0;
     let hasWeekdayHours = false;
 
-    if (formData["is_per_day"]) {
-      const dates = getDatesInRange(formData.Start_Date, formData.End_Date);
-      const weekdays = dates.filter((d) => {
-        const day = new Date(d).getUTCDay();
-        return day >= 1 && day <= 5;
-      });
-      const saturdayDates = dates.filter((d) => new Date(d).getUTCDay() === 6);
-      const sundayDates = dates.filter((d) => new Date(d).getUTCDay() === 0);
+   if (formData["is_per_day"]) {
+  const dates = getDatesInRange(formData.Start_Date, formData.End_Date);
 
-      weekdaysCount = weekdays.length;
-      weekendsCount = saturdayDates.length + sundayDates.length;
-      totalHours = calculateTotalHoursForPayload();
+  // Weekdays count
+  const weekdays = dates.filter((d) => {
+    const day = new Date(d).getUTCDay();
+    return day >= 1 && day <= 5;
+  });
+  weekdaysCount = formData.include_weekdays ? weekdays.length : 0;
 
-      // Parse weekday hours
-      weekdayHours = parseFloat(formData["hours_per_day_weekdays"] || "0");
-      hasWeekdayHours = !isNaN(weekdayHours) && weekdayHours > 0;
+  // Weekends count based on checkbox selection
+  let weekendDates = [];
+  if (formData.saturday_selected) {
+    weekendDates = weekendDates.concat(dates.filter((d) => new Date(d).getUTCDay() === 6));
+  }
+  if (formData.sunday_selected) {
+    weekendDates = weekendDates.concat(dates.filter((d) => new Date(d).getUTCDay() === 0));
+  }
+  weekendsCount = weekendDates.length;
 
-      const weekendSelected = formData.saturday_selected || formData.sunday_selected;
-      const onlyWeekendDaysSelected = weekendSelected && !hasWeekdayHours;
+  totalHours = calculateTotalHoursForPayload();
 
-      onlyWeekends = formData.include_weekends && onlyWeekendDaysSelected && !formData.include_weekdays;
-    } else if (!formData["is_24/7"]) {
+  // Weekday hours
+  weekdayHours = parseFloat(formData["hours_per_day_weekdays"] || "0");
+  hasWeekdayHours = !isNaN(weekdayHours) && weekdayHours > 0;
+
+  const weekendSelected = formData.saturday_selected || formData.sunday_selected;
+  const onlyWeekendDaysSelected = weekendSelected && !hasWeekdayHours;
+
+  onlyWeekends = formData.include_weekends && onlyWeekendDaysSelected && !formData.include_weekdays;
+}
+
+     else if (!formData["is_24/7"]) {
       const dates = getDatesInRange(formData.Start_Date, formData.End_Date);
       const hoursPerDay = getTimeDifferenceInHours(formData.Start_Time, formData.End_Time);
       totalHours = (dates.length * hoursPerDay).toFixed(2);
@@ -516,27 +527,29 @@ function App() {
               End_time: formData.End_Date.split("T")[1],
               hours_per_day: null,
             }
-            : formData.is_per_day
-              ? {
-                Start_date: formData.Start_Date,
-                End_date: formData.End_Date,
-                start_time_weekdays: formData.include_weekdays ? (formData["startTime_weekdays"] || null) : null,
-                end_time_weekdays: formData.include_weekdays ? (formData["endTime_weekdays"] || null) : null,
-                start_time_saturday: formData.saturday_selected ? formData.startTime_saturday || null : null,
-                end_time_saturday: formData.saturday_selected ? formData.endTime_saturday || null : null,
-                hours_per_day_saturday: formData.saturday_selected ? formData.hours_per_day_saturday || null : null,
-                start_time_sunday: formData.sunday_selected ? formData.startTime_sunday || null : null,
-                end_time_sunday: formData.sunday_selected ? formData.endTime_sunday || null : null,
-                hours_per_day_sunday: formData.sunday_selected ? formData.hours_per_day_sunday || null : null,
-                hours_per_day_weekdays: formData.include_weekdays ? (formData["hours_per_day_weekdays"] || null) : null,
-                total_hours: parseFloat(totalHours),
-                include_weekends: formData.include_weekends,
-                only_weekends: onlyWeekends,
-                weekdays_count: weekdaysCount,
-                weekends_count: weekendsCount,
-                saturday: formData.saturday_selected,
-                sunday: formData.sunday_selected,
-              }
+        : formData.is_per_day
+  ? {
+      Start_date: formData.Start_Date,
+      End_date: formData.End_Date,
+      start_time_weekdays: formData.include_weekdays ? (formData.startTime_weekdays || null) : null,
+      end_time_weekdays: formData.include_weekdays ? (formData.endTime_weekdays || null) : null,
+      start_time_saturday: formData.saturday_selected ? formData.startTime_saturday || null : null,
+      end_time_saturday: formData.saturday_selected ? formData.endTime_saturday || null : null,
+      hours_per_day_saturday: formData.saturday_selected ? formData.hours_per_day_saturday || null : null,
+      start_time_sunday: formData.sunday_selected ? formData.startTime_sunday || null : null,
+      end_time_sunday: formData.sunday_selected ? formData.endTime_sunday || null : null,
+      hours_per_day_sunday: formData.sunday_selected ? formData.hours_per_day_sunday || null : null,
+      hours_per_day_weekdays: formData.include_weekdays ? (formData.hours_per_day_weekdays || null) : null,
+      total_hours: parseFloat(totalHours),
+      include_weekends: formData.include_weekends,
+      only_weekends: onlyWeekends,
+      weekdays_count: weekdaysCount,
+      weekends_count: weekendsCount,
+      saturday: formData.saturday_selected,
+      sunday: formData.sunday_selected,
+    }
+
+
               : {
                 Start_date: formData.Start_Date,
                 Start_time: formData.Start_Time,
