@@ -113,7 +113,7 @@ export const UserDetailView = () => {
   const handleConfirmApprove = async (id) => {
     setIsApproving(true);
     try {
-      const res = await dispatch(ApprovedSubmitApi({ status: "approved", id })).unwrap();
+      const res = await dispatch(ApprovedSubmitApi({ status: "approved", id, date: new Date().toISOString() })).unwrap();
       if (res.msg === "Data inserted in Zoho CRM with file(s)") {
         setApproved(true);
         toast.success("User approved successfully! Please upload the badge ID.");
@@ -140,7 +140,7 @@ export const UserDetailView = () => {
   const handleDecline = async (id) => {
     setDeclined(true);
     try {
-      await dispatch(ApprovedSubmitApi({ status: "not approved", id })).unwrap();
+      await dispatch(ApprovedSubmitApi({ status: "not approved", id, date: new Date().toISOString() })).unwrap();
       toast.success("User declined successfully.");
       setTimeout(() => {
         setShowDeclineModal(false);

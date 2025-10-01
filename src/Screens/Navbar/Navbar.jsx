@@ -116,40 +116,51 @@ export const NavbarComponent = () => {
               >
                 <i className="bi bi-shield-lock-fill me-1"></i> Guard Price
               </Nav.Link>
-<div className="d-block d-lg-none">
-              <Nav.Link
-                as={Link}
-                to="/signup"
-                
-                className={`nav-item mx-2 fw-semibold ${location.pathname === "/signup"
-                  ? "text-primary"
-                  : "text-dark"
-                  }`}
-              >
-                <i className="bi bi-shield-lock-fill me-1"></i> Add Member
-              </Nav.Link>
-                         <Nav.Link
-                as={Link}
-                to="/Reset_password"
-                
-                className={`nav-item mx-2 fw-semibold ${location.pathname === "/Reset_password"
-                  ? "text-primary"
-                  : "text-dark"
-                  }`}
-              >
-                <i className="bi bi-shield-lock-fill me-1"></i> Reset Password
-              </Nav.Link>
-                         <Nav.Link
-                as={Link}
-                to="/GuardPriceList"
-                
-                className={`nav-item mx-2 fw-semibold ${location.pathname === "/GuardPriceList"
-                  ? "text-primary"
-                  : "text-dark"
-                  }`}
-              >
-                <i className="bi bi-shield-lock-fill me-1"></i> Member Activity
-              </Nav.Link>
+              <div className="d-block d-lg-none">
+                <Nav.Link
+                  as={Link}
+                  to="/signup"
+
+                  className={`nav-item mx-2 fw-semibold ${location.pathname === "/signup"
+                    ? "text-primary"
+                    : "text-dark"
+                    }`}
+                >
+                  <i className="bi bi-person-plus-fill me-1"></i> Add Member
+                </Nav.Link>
+                <Nav.Link
+                  as={Link}
+                  to="/Reset_password"
+
+                  className={`nav-item mx-2 fw-semibold ${location.pathname === "/Reset_password"
+                    ? "text-primary"
+                    : "text-dark"
+                    }`}
+                >
+                  <i className="bi bi-key-fill me-1"></i> Reset Password
+                </Nav.Link>
+                <Nav.Link
+                  as={Link}
+                  to="/GuardPriceList"
+
+                  className={`nav-item mx-2 fw-semibold ${location.pathname === "/GuardPriceList"
+                    ? "text-primary"
+                    : "text-dark"
+                    }`}
+                >
+                  <i className="bi bi-people-fill me-1"></i> Member Activity
+                </Nav.Link>
+                <Nav.Link
+                  as={Link}
+                  to="/token-generator"
+
+                  className={`nav-item mx-2 fw-semibold ${location.pathname === "/token-generator"
+                    ? "text-primary"
+                    : "text-dark"
+                    }`}
+                >
+                  <i className="bi bi-shield-lock me-1"></i> Token Generator
+                </Nav.Link>
               </div>
             </Nav>
 

@@ -20,11 +20,13 @@ export const SlidingMenu = () => {
     const menuItems = [
         { to: "/signup", label: "Add Member", icon: "bi bi-person-plus-fill" },
         { to: "/Reset_password", label: "Reset Password", icon: "bi bi-key-fill" },
+        { to: "/member-activity", label: "Member Activity", icon: "bi bi-people-fill" },
+        { to: "/token-generator", label: "Token Generator", icon: "bi bi-shield-lock" },
+
     ];
 
     return (
         <div className="d-none d-lg-flex" style={{ position: "relative" }}>
-            {/* Menu Button */}
             <Button
                 className="p-2 border-0 shadow-none"
                 style={{
@@ -44,7 +46,7 @@ export const SlidingMenu = () => {
                     top: 0,
                     left: 0,
                     height: "100vh",
-                    width: "200px",
+                    width: "220px",
                     backgroundColor: "#f8f9fa",
                     boxShadow: "2px 0 5px rgba(0,0,0,0.2)",
                     padding: "1rem",

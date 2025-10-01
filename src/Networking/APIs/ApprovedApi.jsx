@@ -1,6 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { Approved_Decline_list, Approvedsubmit, BaseURl, Delete_Not_Aprroved } from './NWconfig';
+import { Approved_Decline_list, Approvedsubmit, BaseURl, Delete_Not_Aprroved, GetCountryState } from './NWconfig';
 
 export const ApprovedSubmitApi = createAsyncThunk(
   'form/ApprovedSubmit',
@@ -115,3 +115,4 @@ export const DeleteUserApi = createAsyncThunk(
     }
   }
 );
+

@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { GetuserDetail, GetuserList } from "../../Networking/APIs/UserGetDetails";
+import { GetCountryStateApi } from "../../Networking/APIs/UserGetDetails"; // adjust path
 import { useNavigate } from "react-router-dom";
 import NoData from "../../../Images/NoData.png";
 import Loader from "../../Component/Loader";
@@ -9,14 +10,19 @@ export const Dashboard = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  // Table data from Redux
   const { data } = useSelector((state) => state.userListSlice);
-  // console.log(data, "data in dashboard");
 
   const [loading, setLoading] = useState(true);
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedState, setSelectedState] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  
+
+  // Local state for dropdowns
+  const [countries, setCountries] = useState([]);
+  const [states, setStates] = useState([]);
+
+  // Fetch table data via Redux
   useEffect(() => {
     if (!data || data.length === 0) {
       dispatch(GetuserList())
@@ -28,6 +34,18 @@ export const Dashboard = () => {
     }
   }, [dispatch, data]);
 
+  // Fetch countries and states using your thunk
+  useEffect(() => {
+    dispatch(GetCountryStateApi())
+      .unwrap()
+      .then((res) => {
+        setCountries(res.countries || []); // adjust based on API response structure
+        setStates(res.states || []);
+      })
+      .catch(console.error);
+  }, [dispatch]);
+
+  // Filtered table data
   const filteredData = useMemo(() => {
     if (!Array.isArray(data)) return [];
 
@@ -41,55 +59,17 @@ export const Dashboard = () => {
     });
   }, [data, selectedCountry, selectedState, searchQuery]);
 
-  const uniqueCountries = useMemo(() => {
-    return [...new Set(data?.map((user) => user.country).filter(Boolean))].sort(
-    (a, b) => a.localeCompare(b)
-    );
-  }, [data]);
-
- const uniqueStates = useMemo(() => {
-  return [...new Set(data?.map((user) => user.state).filter(Boolean))].sort(
-    (a, b) => a.localeCompare(b)
-  );
-}, [data]);
-
-
   const handleView = useCallback((id) => {
     dispatch(GetuserDetail({ id }));
     navigate(`/UserDetailView/${id}`);
   }, [dispatch, navigate]);
 
-
-const handleAddMember = () => navigate("/signup");
-
   return (
-    <div
-      className="p-5 d-flex justify-content-center"
-      style={{
-        background: "linear-gradient(135deg, #fffbe6, #f7e0b5)",
-        minHeight: "100vh",
-      }}
-    >
- <div>
-  {/* <button onClick={handleAddMember} className="px-3 py-2 mb-4 btn btn-warning" style={{ borderRadius: "8px", fontWeight: "600" }}>
-  Add Member
-  </button> */}
-
-</div>
+    <div className="p-5 d-flex justify-content-center" style={{ background: "linear-gradient(135deg, #fffbe6, #f7e0b5)", minHeight: "100vh" }}>
       <div className="card w-100 shadow" style={{ borderRadius: "12px", maxWidth: "1200px" }}>
-        <div
-          className="card-header text-center fw-bold text-black"
-          style={{
-            backgroundColor: "#d4a52e",
-            borderTopLeftRadius: "12px",
-            borderTopRightRadius: "12px",
-            fontSize: "20px",
-            padding: "15px",
-          }}
-        >
+        <div className="card-header text-center fw-bold text-black" style={{ backgroundColor: "#d4a52e", borderTopLeftRadius: "12px", borderTopRightRadius: "12px", fontSize: "20px", padding: "15px" }}>
           GUARD LIST
         </div>
-
         <div className="card-body">
           {/* Filters */}
           <div className="row mb-4">
@@ -105,32 +85,16 @@ const handleAddMember = () => navigate("/signup");
             </div>
             <div className="col-md-4">
               <label className="form-label">Filter by Country</label>
-              <select
-                className="form-select"
-                value={selectedCountry}
-                onChange={(e) => setSelectedCountry(e.target.value)}
-              >
+              <select className="form-select" value={selectedCountry} onChange={(e) => setSelectedCountry(e.target.value)}>
                 <option value="">All Countries</option>
-                {uniqueCountries.map((country, index) => (
-                  <option key={index} value={country}>
-                    {country}
-                  </option>
-                ))}
+                {countries.map((country, i) => <option key={i} value={country}>{country}</option>)}
               </select>
             </div>
             <div className="col-md-4">
               <label className="form-label">Filter by State</label>
-              <select
-                className="form-select"
-                value={selectedState}
-                onChange={(e) => setSelectedState(e.target.value)}
-              >
+              <select className="form-select" value={selectedState} onChange={(e) => setSelectedState(e.target.value)}>
                 <option value="">All States</option>
-                {uniqueStates.map((state, index) => (
-                  <option key={index} value={state}>
-                    {state}
-                  </option>
-                ))}
+                {states.map((state, i) => <option key={i} value={state}>{state}</option>)}
               </select>
             </div>
           </div>
@@ -167,10 +131,7 @@ const handleAddMember = () => navigate("/signup");
                       <td>{user.state}</td>
                       <td>{user.country}</td>
                       <td>
-                        <button
-                          className="btn btn-sm btn-outline-primary"
-                          onClick={() => handleView(user.id)}
-                        >
+                        <button className="btn btn-sm btn-outline-primary" onClick={() => handleView(user.id)}>
                           <i className="bi bi-eye"> View</i>
                         </button>
                       </td>
@@ -190,4 +151,3 @@ const handleAddMember = () => navigate("/signup");
     </div>
   );
 };
-

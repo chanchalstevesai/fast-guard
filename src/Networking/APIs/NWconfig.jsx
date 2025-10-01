@@ -1,7 +1,7 @@
 // export const BaseURl = "https://api.securityguardbank.com/";
 
 
-export const BaseURl ="https://4d40e2349b11.ngrok-free.app/";
+export const BaseURl ="https://29f9c501a47a.ngrok-free.app/";
 
 export const submitRegistration = "submit";
 
@@ -24,6 +24,8 @@ export const Notes = "update_notes";
 export const Guardprice = "get-guard-price";
 
 export const UpdateGuardPrice = "update-guard-price";
+
+export const GetCountryState = "get-country-state";
 
 /*
 rod@fastguardservice.com

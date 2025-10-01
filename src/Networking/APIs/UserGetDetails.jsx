@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 
 export const GetuserList = createAsyncThunk(
   'get/GetuserList',
-  async (_, thunkAPI) => {
+  async (params = {}, thunkAPI) => {
     try {
       const token = localStorage.getItem('token');
       //   console.log(token, "token");
@@ -90,6 +90,43 @@ export const NotesDetailSubmit = createAsyncThunk(
       } else {
         return thunkAPI.rejectWithValue("Unexpected response status");
       }
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
+
+
+export const GetCountryStateApi = createAsyncThunk(
+  'get/countryStateList',
+  async (params = {}, thunkAPI) => {
+    try {
+      const token = localStorage.getItem('token');
+
+      // Build the URL with optional query params
+      const url = new URL(BaseURl + 'get-country-state');
+      if (params && typeof params === 'object') {
+        Object.entries(params).forEach(([key, value]) => {
+          if (value !== undefined && value !== null && value !== '') {
+            url.searchParams.append(key, value);
+          }
+        });
+      }
+
+      // API request
+      const response = await axios.get(url.toString(), {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'ngrok-skip-browser-warning': 'true',
+        },
+      });
+
+      if (response.status === 200) {
+        return response.data?.data || response.data; // expects { countries: [...], states: [...] }
+      }
+
+      return thunkAPI.rejectWithValue('Unexpected response status');
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response?.data || error.message);
     }
