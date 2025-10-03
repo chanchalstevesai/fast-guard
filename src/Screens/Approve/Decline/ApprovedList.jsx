@@ -20,9 +20,7 @@ export const ApprovedListComponent = () => {
   const [localList, setLocalList] = useState([]);
 
   const [search, setSearch] = useState("");
-
   const { Approvedlist, loading, error } = useSelector((state) => state.ApprovedSlice);
-
   const listApprovedGuard = Approvedlist.data;
 
   useEffect(() => {
@@ -179,7 +177,8 @@ export const ApprovedListComponent = () => {
                     </h6>
                     <p className="card-text small mt-2 mb-0 text-dark">
                       <i className="bi bi-telephone-fill me-2 text-secondary"></i>{user.cell_phone}<br />
-                      <i className="bi bi-envelope-fill me-2 text-secondary"></i>{user.email}
+                      <i className="bi bi-envelope-fill me-2 text-secondary"></i>{user.email}<br />
+                      <i className="bi bi-person-check-fill me-2 text-success"></i>{user.status_change_by || 'Null'}
                     </p>
                   </div>
                 </div>

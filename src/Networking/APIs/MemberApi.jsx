@@ -6,12 +6,14 @@ export const getMembers = createAsyncThunk(
   "members/getMembers",
   async (_, thunkAPI) => {
     try {
+       const token = localStorage.getItem("token");
       const response = await axios.get(
         BaseURl +"/get_members",
         {
           headers: {
             "Content-Type": "application/json",
             "ngrok-skip-browser-warning": "true",
+            Authorization: `Bearer ${token}`,
           },
         }
       );

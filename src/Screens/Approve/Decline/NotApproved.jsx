@@ -254,61 +254,36 @@ export const NotApprovedListComponent = () => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [users, setUsers] = useState([]);
-    const [search, setSearch] = useState("");
+  const [search, setSearch] = useState("");
 
-  // const fetchUsers = async (currentPage, reset = false) => {
-  //   try {
-  //     const res = await dispatch(
-  //       ApprovedList({ params: { status: "not approved", page: currentPage } })
-  //     ).unwrap();
+  const fetchUsers = async (currentPage, reset = false) => {
+    try {
+      const params = { status: "not approved", page: currentPage };
 
-  //     if (!res.data || res.data.length === 0) {
-  //       if (currentPage === 1) setUsers([]);
-  //       setHasMore(false);
-  //     } else {
-  //       if (reset || currentPage === 1) {
-  //         setUsers(res.data);
-  //       } else {
-  //         setUsers((prev) => [...prev, ...res.data]);
-  //       }
-  //       setHasMore(true);
-  //     }
-  //   } catch (err) {
-  //     console.error("Error fetching users:", err);
-  //     if (currentPage === 1) setUsers([]);
-  //     setHasMore(false);
-  //   }
-  // };
+      if (search.trim()) {
+        params.name = search.trim();
+        
+      }
 
+      const res = await dispatch(ApprovedList({ params })).unwrap();
 
-const fetchUsers = async (currentPage, reset = false) => {
-  try {
-    const params = { status: "not approved", page: currentPage };
-
-    if (search.trim()) {
-      params.name = search.trim(); 
-      // 🔹 Add search filter here
-    }
-
-    const res = await dispatch(ApprovedList({ params })).unwrap();
-
-    if (!res.data || res.data.length === 0) {
+      if (!res.data || res.data.length === 0) {
+        if (currentPage === 1) setUsers([]);
+        setHasMore(false);
+      } else {
+        if (reset || currentPage === 1) {
+          setUsers(res.data);
+        } else {
+          setUsers((prev) => [...prev, ...res.data]);
+        }
+        setHasMore(true);
+      }
+    } catch (err) {
+      console.error("Error fetching users:", err);
       if (currentPage === 1) setUsers([]);
       setHasMore(false);
-    } else {
-      if (reset || currentPage === 1) {
-        setUsers(res.data);
-      } else {
-        setUsers((prev) => [...prev, ...res.data]);
-      }
-      setHasMore(true);
     }
-  } catch (err) {
-    console.error("Error fetching users:", err);
-    if (currentPage === 1) setUsers([]);
-    setHasMore(false);
-  }
-};
+  };
 
 
   useEffect(() => {
@@ -458,11 +433,13 @@ const fetchUsers = async (currentPage, reset = false) => {
                       {user.country || "N/A"}
                     </h6>
                     <p className="card-text small mt-2 mb-0 text-dark">
-                      <i className="bi bi-telephone-fill me-2 text-secondary"></i>
-                      {user.cell_phone}
-                      <br />
+                  
                       <i className="bi bi-envelope-fill me-2 text-secondary"></i>
                       {user.email}
+                      <br />
+                        <i className="bi bi-telephone-fill me-2 text-secondary"></i>
+                      {user.cell_phone} <br/>
+                      <i className="bi bi-person-x-fill me-2 text-danger"></i>{user.status_change_by || 'Null'}
                     </p>
                   </div>
                 </div>
@@ -498,7 +475,7 @@ const fetchUsers = async (currentPage, reset = false) => {
           style={{ borderTop: "2px solid #dc3545" }}
         />
       </div>
-            <div className="row mb-4">
+      <div className="row mb-4">
         <div className="col-md-6 mx-auto">
           <input
             type="text"

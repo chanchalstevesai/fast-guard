@@ -6,7 +6,7 @@ export const signupUser = createAsyncThunk(
   "signup/signupUser",
   async (userData, thunkAPI) => {
     try {
-      
+      const token = localStorage.getItem("token");
       const response = await axios.post(
         BaseURl +  "/add_member",
         { ...userData, role: "member" },
@@ -14,6 +14,7 @@ export const signupUser = createAsyncThunk(
           headers: {
             "Content-Type": "application/json",
             "ngrok-skip-browser-warning": "true",
+             Authorization: `Bearer ${token}`,
           },
         }
       );

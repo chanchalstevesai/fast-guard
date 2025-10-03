@@ -1,17 +1,20 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import { BaseURl } from "./NWconfig";
 
 // Delete member by id
 export const deleteMember = createAsyncThunk(
   "members/deleteMember",
   async (id, thunkAPI) => {
     try {
+      const token = localStorage.getItem("token");
       const response = await axios.delete(
-        `https://f0b8191f1575.ngrok-free.app/delete_member/${id}`, // adjust your endpoint
+        BaseURl + `delete_member/${id}`, 
         {
           headers: {
             "Content-Type": "application/json",
             "ngrok-skip-browser-warning": "true",
+             Authorization: `Bearer ${token}`,
           },
         }
       );

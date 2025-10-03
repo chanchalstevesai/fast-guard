@@ -53,7 +53,7 @@ const SignUp = () => {
         style={{ maxWidth: "1000px", margin: "auto" }}
       >
         <h2 className="mb-6 text-center text-black fw-bold text-2xl">Add Member</h2>
-        <form onSubmit={handleAddMember}>
+        <form onSubmit={handleAddMember} autoComplete="off">
           <div className="mb-3 flex flex-row gap-3">
             <div className="d-flex flex-column gap-1 w-50">
               <label className="px-1 font-semibold">Email :</label>
@@ -61,10 +61,11 @@ const SignUp = () => {
                 type="email"
                 name="email"
                 placeholder="Enter Email"
-                value={form.email}
+                // value={form.email}
                 onChange={handleChange}
                 required
                 className="form-control"
+                 autoComplete="off"
                 style={{ padding: "10px", borderRadius: "5px", border: "1px solid #ccc" }}
               />
             </div>
@@ -75,7 +76,7 @@ const SignUp = () => {
                 type="password"
                 name="password"
                 placeholder="Enter Password"
-                value={form.password}
+                // value={form.password}
                 onChange={handleChange}
                 required
                 className="form-control"

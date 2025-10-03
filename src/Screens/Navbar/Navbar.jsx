@@ -141,9 +141,9 @@ export const NavbarComponent = () => {
                 </Nav.Link>
                 <Nav.Link
                   as={Link}
-                  to="/GuardPriceList"
+                  to="/member-activity"
 
-                  className={`nav-item mx-2 fw-semibold ${location.pathname === "/GuardPriceList"
+                  className={`nav-item mx-2 fw-semibold ${location.pathname === "/member-activity"
                     ? "text-primary"
                     : "text-dark"
                     }`}
