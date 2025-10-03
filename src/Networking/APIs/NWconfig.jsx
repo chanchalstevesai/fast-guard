@@ -5,7 +5,7 @@ export const BaseURl ="https://c76c6518acb8.ngrok-free.app/";
 
 export const submitRegistration = "submit";
 
-export const getUserlist = "all-security-guards";
+export const getUserlist = "all-security-guard-new";
 
 export const userDetail = "guard";
 
@@ -31,3 +31,5 @@ export const GetCountryState = "get-country-state";
 rod@fastguardservice.com
 Fastguard@123
 */
+
+
