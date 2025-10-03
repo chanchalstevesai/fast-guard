@@ -1,7 +1,7 @@
 // export const BaseURl = "https://api.securityguardbank.com/";
 
 
-export const BaseURl ="https://29f9c501a47a.ngrok-free.app/";
+export const BaseURl ="https://c76c6518acb8.ngrok-free.app/";
 
 export const submitRegistration = "submit";
 
@@ -13,7 +13,7 @@ export const Login = "login";
 
 export const Approvedsubmit = "approve_status";
 
-export const Approved_Decline_list = "guards_status";
+export const Approved_Decline_list = "all-security-guard-new";
 
 export const Fastguard_IDForm = "fastguard_id";
 

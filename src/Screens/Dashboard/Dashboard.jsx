@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { GetuserDetail, GetuserList } from "../../Networking/APIs/UserGetDetails";
-import { GetCountryStateApi } from "../../Networking/APIs/UserGetDetails"; // adjust path
+import { GetCountryStateApi } from "../../Networking/APIs/UserGetDetails"; 
 import { useNavigate } from "react-router-dom";
 import NoData from "../../../Images/NoData.png";
 import Loader from "../../Component/Loader";
@@ -17,6 +17,8 @@ export const Dashboard = () => {
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedState, setSelectedState] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+    const [page, setPage] = useState(1);
+    const [hasMore, setHasMore] = useState(true);
 
   // Local state for dropdowns
   const [countries, setCountries] = useState([]);
@@ -63,6 +65,32 @@ export const Dashboard = () => {
     dispatch(GetuserDetail({ id }));
     navigate(`/UserDetailView/${id}`);
   }, [dispatch, navigate]);
+
+   const debounce = (fn, delay) => {
+    let timer;
+    return (...args) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => fn(...args), delay);
+    };
+  };
+   const handleScroll = useCallback(
+      debounce(() => {
+        if (!hasMore || loading) return;
+        const scrollTop = document.documentElement.scrollTop;
+        const windowHeight = window.innerHeight;
+        const fullHeight = document.documentElement.offsetHeight;
+        if (scrollTop + windowHeight + 50 >= fullHeight) {
+          setPage((prev) => prev + 1);
+        }
+      }, 300),
+      [hasMore, loading]
+    );
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [handleScroll]);
+
 
   return (
     <div className="p-5 d-flex justify-content-center" style={{ background: "linear-gradient(135deg, #fffbe6, #f7e0b5)", minHeight: "100vh" }}>

@@ -227,3 +227,4 @@ export const ApprovedListComponent = () => {
     </div>
   );
 };
+
