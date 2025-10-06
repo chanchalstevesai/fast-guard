@@ -1,13 +1,16 @@
 
 import React, { useEffect, useState } from "react";
 import { memberActivity } from "../../Networking/APIs/MemberActivityApi";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom"; 
+import { useDispatch } from "react-redux";
+ import { setSelectedUsermail } from "../../Networking/Slice/GetMailSlice";
 
 const MemberActivity = () => {
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
     const navigate = useNavigate();
+     const dispatch = useDispatch();
 
  useEffect(() => {
   const fetchMembers = async () => {
@@ -27,10 +30,10 @@ const MemberActivity = () => {
 }, []);
 
 
-const handleClick = () =>{
+const handleClick = (email) =>{
+dispatch(setSelectedUsermail(email));
    navigate("/view-activity"); 
 }
-
 
 
   if (loading) return <p className="text-center py-6">Loading...</p>;
@@ -57,7 +60,7 @@ const handleClick = () =>{
                   {member.email}
                 </p>
 
-                <button onClick={handleClick} className="w-full sm:w-auto text-center border border-blue-500 text-blue-600 px-3 py-2 rounded-md text-sm sm:text-base hover:bg-blue-50 transition">
+                <button  onClick={() => handleClick(member.email)}  className="w-full sm:w-auto text-center border border-blue-500 text-blue-600 px-3 py-2 rounded-md text-sm sm:text-base hover:bg-blue-50 transition">
                   View Activity
                 </button>
               </div>
@@ -73,3 +76,6 @@ const handleClick = () =>{
 
 export default MemberActivity;
 
+/*
+here in this code when i click on view activity button i haveto get the email i have to store this email in the redux
+*/

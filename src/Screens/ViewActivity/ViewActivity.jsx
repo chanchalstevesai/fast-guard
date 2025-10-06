@@ -1,8 +1,11 @@
 
 import React, { useState } from "react";
-import { viewMemberActivity } from "../../Networking/APIs/ViewActivityApi"; // adjust path
+import { viewMemberActivity } from "../../Networking/APIs/ViewActivityApi"; 
 import NoData from "../../../Images/NoData.png";
 import userImage from "../../../Images/userImage.jpg"
+import { useDispatch, useSelector } from "react-redux";
+import { GetuserDetail } from "../../Networking/APIs/UserGetDetails";
+import { useNavigate } from "react-router-dom";
 
 const ViewActivity = () => {
     const [status, setStatus] = useState("");
@@ -11,6 +14,9 @@ const ViewActivity = () => {
     const [members, setMembers] = useState([]);
     const [loading, setLoading] = useState(false);
     const [totalGuards, setTotalGuards] = useState(0);
+      const selectedEmail = useSelector((state) => state.usermail.selectedEmail);
+      const dispatch = useDispatch();
+        const navigate = useNavigate();
 
 
     const handleFilter = async () => {
@@ -21,6 +27,7 @@ const ViewActivity = () => {
       status,
       date_from: fromDate,
       date_to: toDate,
+       email: selectedEmail,
     };
 
     const { members, totalGuards } = await viewMemberActivity(filters);
@@ -34,7 +41,11 @@ const ViewActivity = () => {
     };
 
     const handleView = (id) => {
+          const data = { userId: id };
+          dispatch(GetuserDetail({ id_: id }));
+          navigate('/ApprovedView', { state: data });
         console.log("View member ID:", id);
+
         
     };
 
@@ -45,6 +56,7 @@ const ViewActivity = () => {
 
     return (
         <div className="container mt-4 mb-5 p-4">
+          <p>Member :  {selectedEmail || "No member selected"}</p>
                 <p className="text-center text-2xl">Total : {totalGuards}</p>
   <div className="flex flex-col sm:flex-row sm:items-end gap-4">
 

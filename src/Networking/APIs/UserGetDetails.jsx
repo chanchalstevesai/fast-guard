@@ -3,71 +3,6 @@ import axios from 'axios';
 import { BaseURl, Notes, userDetail } from './NWconfig';
 import { toast } from 'react-toastify';
 
-// export const GetuserList = createAsyncThunk(
-//   'get/GetuserList',
-//   async (params = {}, thunkAPI) => {
-//     try {
-//       const token = localStorage.getItem('token');
-//       //   console.log(token, "token");
-
-//       const response = await axios.get(
-//         BaseURl + "all-security-guards",
-//         {
-//           headers: {
-//             Authorization: `Bearer ${token}`,
-//             "ngrok-skip-browser-warning": "true",
-//           }
-//         }
-//       );
-//       //   console.log(response.data, "response");
-//       if (response.status === 200) {
-//         return Promise.resolve(response.data.data);
-//       } else {
-//         return Promise.reject("Unexpected response status");
-//       }
-//     } catch (error) {
-//       return Promise.reject(thunkAPI.rejectWithValue(error.response?.data || error.message));
-//     }
-//   }
-// );
-
-
-// export const GetuserList = createAsyncThunk(
-//   'get/GetuserList',
-//   async (params = {}, thunkAPI) => {
-//     try {
-//       const token = localStorage.getItem('token');
-
-//       const response = await axios.get(
-//         BaseURl + "all-security-guards",
-//         {
-//           headers: {
-//             Authorization: `Bearer ${token}`,
-//             "ngrok-skip-browser-warning": "true",
-//           },
-         
-//                    params: {
-//             page: params.page || 1,
-           
-//             search: params.search || "",
-//             country: params.country || "",
-//             state: params.state || "",
-//           }// <-- pass page, search, country, state here
-//         }
-//       );
-
-//       if (response.status === 200) {
-//         return Promise.resolve(response.data.data); // API should return paginated array
-//       } else {
-//         return Promise.reject("Unexpected response status");
-//       }
-//     } catch (error) {
-//       return Promise.reject(thunkAPI.rejectWithValue(error.response?.data || error.message));
-//     }
-//   }
-// );
-
-
 export const GetuserList = createAsyncThunk(
   'get/GetuserList',
   async (params = {}, thunkAPI) => {
@@ -94,12 +29,12 @@ export const GetuserList = createAsyncThunk(
             Authorization: `Bearer ${token}`,
             "ngrok-skip-browser-warning": "true",
           },
-          params: queryParams, // only non-empty params are sent
+          params: queryParams, 
         }
       );
 
       if (response.status === 200) {
-        return response.data.data; // paginated array
+        return response.data.data; 
       } else {
         return thunkAPI.rejectWithValue("Unexpected response status");
       }
@@ -122,16 +57,12 @@ export const GetuserDetail = createAsyncThunk(
         url.searchParams.append("id", id);
       }
 
-      // console.log(url.toString(), "📌 Final request URL");
-
       const response = await axios.get(url.toString(), {
         headers: {
           Authorization: `Bearer ${token}`,
           "ngrok-skip-browser-warning": "true",
         }
       });
-
-      // console.log(response, "✅ API response");
 
       if (response.status === 200) {
         return response.data.data;

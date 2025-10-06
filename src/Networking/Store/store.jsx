@@ -4,6 +4,7 @@ import loginReducer from "../Slice/LoginSlice";
 import ApprovedReducer from "../Slice/ApprovedSlice";
 import formReducer from "../Slice/RegistrationSlice"
 import membersSlice from '../Slice/GetAddMemberList';
+import usermailReducer from '../Slice/GetMailSlice';
 const store = configureStore({
     reducer: {
         formSlice: formReducer,
@@ -11,7 +12,12 @@ const store = configureStore({
         userListSlice: userListReducer,
         ApprovedSlice: ApprovedReducer,
         members: membersSlice,
+         usermail: usermailReducer,
     },
 });
 
 export default store;
+
+
+
+
