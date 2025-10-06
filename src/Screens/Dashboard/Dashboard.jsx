@@ -1,9 +1,10 @@
 import { useEffect, useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { GetuserDetail, GetuserList, GetCountryStateApi } from "../../Networking/APIs/UserGetDetails"; 
+import { GetuserDetail, GetuserList, GetCountryStateApi } from "../../Networking/APIs/UserGetDetails";
 import { useNavigate } from "react-router-dom";
 import NoData from "../../../Images/NoData.png";
 import Loader from "../../Component/Loader";
+import { HiOutlineGif } from "react-icons/hi2";
 
 export const Dashboard = () => {
   const dispatch = useDispatch();
@@ -24,9 +25,9 @@ export const Dashboard = () => {
 
   // Fetch paginated data
   const fetchUsers = useCallback((pageNum = 1, reset = false) => {
-    const params = { 
+    const params = {
       page: pageNum,
-      status: "None",   // ⚡ always include status=None
+      status: "None",
     };
 
     if (searchQuery.trim()) params.search = searchQuery.trim();
@@ -35,7 +36,7 @@ export const Dashboard = () => {
 
     setLoading(true);
 
-    dispatch(GetuserList(params))   // ⚡ pass cleaned params
+    dispatch(GetuserList(params))
       .unwrap()
       .then((res) => {
         if (res && res.length > 0) {
@@ -52,6 +53,18 @@ export const Dashboard = () => {
   useEffect(() => {
     fetchUsers(page);
   }, [fetchUsers, page]);
+
+  useEffect(() => {
+    fetchUsers(page);
+  }, [fetchUsers, page]);
+
+  useEffect(() => {
+    setPage(1);
+    setHasMore(true);
+    fetchUsers(1, true);
+  }, [searchQuery, selectedCountry, selectedState]);
+
+
 
   // Fetch countries & states
   useEffect(() => {
@@ -204,3 +217,6 @@ export const Dashboard = () => {
     </div>
   );
 };
+
+
+

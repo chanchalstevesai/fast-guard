@@ -20,6 +20,7 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import { GuardPriceList } from './Screens/GuardPrice/GuardProiceList';
 import SignUp from './Screens/SignUp/SignUp';
 import MemberActivity from './Screens/MemberActivity/MemberActivity';
+import ViewActivity from './Screens/ViewActivity/ViewActivity';
 
 
 const App = () => {
@@ -44,8 +45,10 @@ const App = () => {
             <Route path="/GuardPriceList" element={<PrivateRoute><GuardPriceList /></PrivateRoute>} />
             <Route path="/signup" element={<PrivateRoute><SignUp /></PrivateRoute>} />
             <Route path="/member-activity" element={<PrivateRoute><MemberActivity /></PrivateRoute>} />
+            <Route path="/view-activity" element={<PrivateRoute><ViewActivity /></PrivateRoute>} />
 
-            MemberActivity
+
+          
 
             
             </Routes>

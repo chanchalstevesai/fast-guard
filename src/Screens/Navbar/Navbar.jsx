@@ -15,8 +15,8 @@ export const NavbarComponent = () => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const menuRef = useRef(null);
+  const [role, setRole] = useState("");
 
-  // Close menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -26,6 +26,13 @@ export const NavbarComponent = () => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+useEffect(() => {
+  const userRole = localStorage.getItem("role");
+  if (userRole) {
+    setRole(userRole);
+  }
+}, []);
 
   const handleApprovelist = () => {
     dispatch(ApprovedList({ params: { status: "approved" } }));
@@ -105,7 +112,7 @@ export const NavbarComponent = () => {
                 <i className="bi bi-x-circle-fill me-1"></i> Not Approved
               </Nav.Link>
 
-              <Nav.Link
+              {/* <Nav.Link
                 as={Link}
                 to="/GuardPriceList"
                 onClick={handleGuardPricelist}
@@ -115,8 +122,24 @@ export const NavbarComponent = () => {
                   }`}
               >
                 <i className="bi bi-shield-lock-fill me-1"></i> Guard Price
-              </Nav.Link>
+              </Nav.Link> */}
+              {role === "admin" && (
+  <Nav.Link
+    as={Link}
+    to="/GuardPriceList"
+    onClick={handleGuardPricelist}
+    className={`nav-item mx-2 fw-semibold ${
+      location.pathname === "/GuardPriceList"
+        ? "text-primary"
+        : "text-dark"
+    }`}
+  >
+    <i className="bi bi-shield-lock-fill me-1"></i> Guard Price
+  </Nav.Link>
+)}
+
               <div className="d-block d-lg-none">
+                 {role === "admin" && (
                 <Nav.Link
                   as={Link}
                   to="/signup"
@@ -128,6 +151,7 @@ export const NavbarComponent = () => {
                 >
                   <i className="bi bi-person-plus-fill me-1"></i> Add Member
                 </Nav.Link>
+                 )}
                 <Nav.Link
                   as={Link}
                   to="/Reset_password"
@@ -139,6 +163,7 @@ export const NavbarComponent = () => {
                 >
                   <i className="bi bi-key-fill me-1"></i> Reset Password
                 </Nav.Link>
+                 {role === "admin" && (
                 <Nav.Link
                   as={Link}
                   to="/member-activity"
@@ -150,6 +175,8 @@ export const NavbarComponent = () => {
                 >
                   <i className="bi bi-people-fill me-1"></i> Member Activity
                 </Nav.Link>
+                 )}
+                  {role === "admin" && (
                 <Nav.Link
                   as={Link}
                   to="/token-generator"
@@ -161,6 +188,7 @@ export const NavbarComponent = () => {
                 >
                   <i className="bi bi-shield-lock me-1"></i> Token Generator
                 </Nav.Link>
+                  )}
               </div>
             </Nav>
 

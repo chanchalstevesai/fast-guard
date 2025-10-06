@@ -17,6 +17,7 @@ export const LoginSubmit = createAsyncThunk(
         if (token) {
           localStorage.setItem('token', token);
           console.log(response.data);
+          localStorage.setItem("role", response.data.role);
           toast.success(response.data.message);
           return Promise.resolve(response.data);
         } else {
