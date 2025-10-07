@@ -4,15 +4,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { signupUser } from "../../Networking/APIs/SignUpApi";
 import { getMembers } from "../../Networking/APIs/MemberApi";
 import { deleteMember } from "../../Networking/APIs/DeleteMemberApi";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const SignUp = () => {
   const dispatch = useDispatch();
   const [form, setForm] = useState({ email: "", password: "" });
   const { list: members, loading } = useSelector((state) => state.members);
-  console.log("Members from Redux:", members);
-
-
-
+   const [showPassword, setShowPassword] = useState(false);
+  
   useEffect(() => {
     dispatch(getMembers());
   }, [dispatch]);
@@ -39,7 +38,9 @@ const SignUp = () => {
       });
     }
   };
-
+   const togglePassword = () => {
+     setShowPassword(prev => !prev);
+   };
 
   return (
     <div
@@ -70,10 +71,10 @@ const SignUp = () => {
               />
             </div>
 
-            <div className="d-flex flex-column gap-1 w-50">
+            <div className="d-flex flex-column gap-1 w-50 position-relative">
               <label className="px-1 font-semibold">Password :</label>
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 name="password"
                 placeholder="Enter Password"
                 // value={form.password}
@@ -82,7 +83,22 @@ const SignUp = () => {
                 className="form-control"
                 style={{ padding: "10px", borderRadius: "5px", border: "1px solid #ccc" }}
               />
+                 <span
+        onClick={togglePassword}
+       style={{
+           position: "absolute",
+           right: "10px",
+          top: "42px",
+          cursor: "pointer",
+         color: "#888",
+         }}
+       >
+        {showPassword ? <FaEyeSlash /> : <FaEye />}
+       </span>
+              
             </div>
+
+            
 
             <div className="d-flex flex-column justify-end gap-1 w-50">
               <button

@@ -21,6 +21,7 @@ import { GuardPriceList } from './Screens/GuardPrice/GuardProiceList';
 import SignUp from './Screens/SignUp/SignUp';
 import MemberActivity from './Screens/MemberActivity/MemberActivity';
 import ViewActivity from './Screens/ViewActivity/ViewActivity';
+import TokenGenerator from './Screens/TokenGenerator/TokenGenerator';
 
 
 const App = () => {
@@ -46,6 +47,8 @@ const App = () => {
             <Route path="/signup" element={<PrivateRoute><SignUp /></PrivateRoute>} />
             <Route path="/member-activity" element={<PrivateRoute><MemberActivity /></PrivateRoute>} />
             <Route path="/view-activity" element={<PrivateRoute><ViewActivity /></PrivateRoute>} />
+            <Route path="/token-generator" element={<PrivateRoute><TokenGenerator /></PrivateRoute>} />
+
 
 
           
