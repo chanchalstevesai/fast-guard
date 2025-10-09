@@ -1,35 +1,51 @@
 
 import React, { useEffect, useState } from "react";
 import { Modal, Button, Form, Container, Row, Col } from "react-bootstrap";
-import { generateTokenData, getTokenData } from "../../Networking/APIs/TokenApi";
+import { CheckToken, generateTokenData, getTokenData } from "../../Networking/APIs/TokenApi";
 import ScopesBox from "./ScopesBox";
+import { FaCheckCircle, FaExclamationTriangle } from "react-icons/fa";
 
 const TokenGenerator = () => {
   const [showModal, setShowModal] = useState(false);
   const [clientId, setClientId] = useState("");
   const [clientSecret, setClientSecret] = useState("");
   const [authorization, setAuthorization] = useState("");
+  const [tokenStatusMessage, setTokenStatusMessage] = useState("");
+  const [tokenStatusType, setTokenStatusType] = useState("");
 
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const fetchTokenData = async () => {
+    const fetchTokenDataAndCheck = async () => {
       try {
         const data = await getTokenData();
         if (data) {
           setClientId(data.client_id || "");
           setClientSecret(data.client_secret || "");
         }
+
+        const checkResponse = await CheckToken()
+        setTokenStatusMessage(checkResponse.message);
+        setTokenStatusType(checkResponse.status);
+
       } catch (error) {
-        console.error("Failed to fetch token data:", error);
+        console.error("Error fetching token data or checking token:", error);
+
+        const backendMessage =
+          error.response?.data?.message || error.message || "Unknown error occurred";
+
+        setTokenStatusMessage(backendMessage);
+        setTokenStatusType("error");
       }
     };
-    fetchTokenData();
+
+    fetchTokenDataAndCheck();
   }, []);
 
   const handleGenerateToken = async () => {
-    const isConfirmed = window.confirm("Are you sure you want to generate Token?");
+    const isConfirmed = window.confirm("Are you sure want to generate Token?");
     if (!isConfirmed) return;
+
     try {
       setLoading(true);
       const result = await generateTokenData({
@@ -37,24 +53,19 @@ const TokenGenerator = () => {
         clientSecret,
         authorizationCode: authorization
       });
-
       setClientId(result.client_id || "");
       setClientSecret(result.client_secret || "");
-
-      // setAuthorization(result.authorization_code || "");
       setAuthorization("");
-
-      alert("Token generated successfully!");
       console.log(result);
-    } catch (error) {
+    }
+    catch (error) {
+      console.log("Full error response:", error.response);
+      const errorMessage = error?.response?.data?.error || error.message || "Something went wrong!";
+      alert(errorMessage);
 
-      setClientId("")
-      setClientSecret("")
       setAuthorization("");
-      alert("Failed to generate token. Check console for details.");
-
-    } finally {
-
+    }
+    finally {
       setLoading(false);
 
     }
@@ -64,6 +75,24 @@ const TokenGenerator = () => {
     <Container className="py-4">
       <Row className="justify-content-center">
         <Col xs={12} md={8} lg={6}>
+
+          {tokenStatusMessage && (
+            <div
+              className={`mb-3 p-2 rounded d-flex align-items-center gap-2 ${tokenStatusType === "success" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+                }`}
+            >
+
+              {tokenStatusType === "success" ? (
+                <FaCheckCircle size={20} />
+              ) : (
+                <FaExclamationTriangle size={20} />
+              )}
+
+
+              <span>{tokenStatusMessage}</span>
+            </div>
+          )}
+
           <div className="p-4 border rounded shadow-sm bg-light">
             <h4 className="text-center mb-4">Token Generator</h4>
             <Form.Group className="mb-3">
@@ -78,13 +107,13 @@ const TokenGenerator = () => {
 
             <div className="mb-3 text-start">
               <Button variant="link" onClick={() => setShowModal(true)} className="p-0">
-                Instructions to generate token
+                Instructions to generate authorization code
               </Button>
             </div>
 
             <Form.Group className="mb-3">
-              <Form.Label className="px-2">Authorization</Form.Label>
-              <Form.Control type="text" placeholder="Enter Authorization" value={authorization} onChange={(e) => setAuthorization(e.target.value)} required />
+              <Form.Label className="px-2">Authorization Code</Form.Label>
+              <Form.Control type="text" placeholder="Enter Authorization Code from Zoho" value={authorization} onChange={(e) => setAuthorization(e.target.value)} required />
             </Form.Group>
 
             <div className="text-start">
@@ -148,8 +177,8 @@ const TokenGenerator = () => {
         </Modal.Footer>
       </Modal>
 
-
     </Container>
+
   );
 };
 

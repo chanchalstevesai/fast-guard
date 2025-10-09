@@ -10,8 +10,8 @@ const SignUp = () => {
   const dispatch = useDispatch();
   const [form, setForm] = useState({ email: "", password: "" });
   const { list: members, loading } = useSelector((state) => state.members);
-   const [showPassword, setShowPassword] = useState(false);
-  
+  const [showPassword, setShowPassword] = useState(false);
+
   useEffect(() => {
     dispatch(getMembers());
   }, [dispatch]);
@@ -22,13 +22,21 @@ const SignUp = () => {
 
   const handleAddMember = async (e) => {
     e.preventDefault();
+    
     try {
-      await dispatch(signupUser(form)).unwrap();
+      const response =  await dispatch(signupUser(form)).unwrap();
+      console.log("Signup success response:", response);
+      const successMessage = response?.msg || "Member added successfully!";
+      alert(successMessage);
       setForm({ email: "", password: "" });
       dispatch(getMembers());
-    } catch (error) {
-      console.error("Signup failed:", error);
     }
+    catch (error) {
+  console.error("Signup failed:", error);
+  const errorMessage = error?.msg
+  alert(errorMessage);
+}
+
   };
 
   const handleDeleteMember = (id) => {
@@ -38,9 +46,9 @@ const SignUp = () => {
       });
     }
   };
-   const togglePassword = () => {
-     setShowPassword(prev => !prev);
-   };
+  const togglePassword = () => {
+    setShowPassword(prev => !prev);
+  };
 
   return (
     <div
@@ -62,11 +70,11 @@ const SignUp = () => {
                 type="email"
                 name="email"
                 placeholder="Enter Email"
-                // value={form.email}
+                value={form.email}
                 onChange={handleChange}
                 required
                 className="form-control"
-                 autoComplete="off"
+                autoComplete="off"
                 style={{ padding: "10px", borderRadius: "5px", border: "1px solid #ccc" }}
               />
             </div>
@@ -77,28 +85,28 @@ const SignUp = () => {
                 type={showPassword ? "text" : "password"}
                 name="password"
                 placeholder="Enter Password"
-                // value={form.password}
+                value={form.password}
                 onChange={handleChange}
                 required
                 className="form-control"
                 style={{ padding: "10px", borderRadius: "5px", border: "1px solid #ccc" }}
               />
-                 <span
-        onClick={togglePassword}
-       style={{
-           position: "absolute",
-           right: "10px",
-          top: "42px",
-          cursor: "pointer",
-         color: "#888",
-         }}
-       >
-        {showPassword ? <FaEyeSlash /> : <FaEye />}
-       </span>
-              
+              <span
+                onClick={togglePassword}
+                style={{
+                  position: "absolute",
+                  right: "10px",
+                  top: "42px",
+                  cursor: "pointer",
+                  color: "#888",
+                }}
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </span>
+
             </div>
 
-            
+
 
             <div className="d-flex flex-column justify-end gap-1 w-50">
               <button
@@ -126,7 +134,7 @@ const SignUp = () => {
                 >
                   <div>
                     <span className="fw-bold text-dark">{m.email}</span>
-                    <small className="ms-2 text-muted">({m.role})</small>
+                    {/* <small className="ms-2 text-muted">({m.role})</small> */}
                   </div>
                   <button
                     className="btn btn-sm btn-outline-danger"

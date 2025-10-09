@@ -9,6 +9,7 @@ import logo from '../../../Images/logo.png';
 import { BaseURl } from '../../Networking/APIs/NWconfig';
 import Loader from '../../Component/Loader';
 import './login.css';
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 export const ResetPassword = () => {
   const navigate = useNavigate();
@@ -19,6 +20,9 @@ export const ResetPassword = () => {
   const [newPassword, setNewPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [isAnimated, setIsAnimated] = useState(false);
+   const [showPassword, setShowPassword] = useState(false);
+   const [showNewPassword, setShowNewPassword] = useState(false);
+
 
   useEffect(() => {
     const timer = setTimeout(() => setIsAnimated(true), 100);
@@ -47,7 +51,13 @@ export const ResetPassword = () => {
       console.error("Password reset failed:", error);
     }
   };
+    const togglePassword = () => {
+    setShowPassword(prev => !prev);
+  };
 
+      const toggleNewPassword = () => {
+    setShowNewPassword(prev => !prev);
+  };
   // --- Render ---
   return (
     <div
@@ -62,7 +72,6 @@ export const ResetPassword = () => {
 
           <div className="text-center mb-4">
             <h3 className="fw-bold">Reset Your Password</h3>
-            <p className="text-muted">Enter your credentials to continue.</p>
           </div>
 
           <form onSubmit={handleSubmit}>
@@ -79,10 +88,10 @@ export const ResetPassword = () => {
                 disabled={loading}
               />
             </div>
-            <div className="mb-3">
+            <div className="mb-3 position-relative">
               <label htmlFor="oldPassword" className="form-label fw-medium">Old Password</label>
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 className="form-control"
                 id="oldPassword"
                 placeholder="Enter old password"
@@ -91,11 +100,23 @@ export const ResetPassword = () => {
                 required
                 disabled={loading}
               />
+                         <span
+                              onClick={togglePassword}
+                              style={{
+                                position: "absolute",
+                                right: "10px",
+                                top: "42px",
+                                cursor: "pointer",
+                                color: "#888",
+                              }}
+                            >
+                              {showPassword ? <FaEyeSlash /> : <FaEye />}
+                            </span>
             </div>
-            <div className="mb-4">
+            <div className="mb-4 position-relative">
               <label htmlFor="newPassword" className="form-label fw-medium">New Password</label>
               <input
-                type="password"
+                type={showNewPassword ? "text" : "password"}
                 className="form-control"
                 id="newPassword"
                 placeholder="Enter new password"
@@ -104,6 +125,18 @@ export const ResetPassword = () => {
                 required
                 disabled={loading}
               />
+                     <span
+                              onClick={toggleNewPassword}
+                              style={{
+                                position: "absolute",
+                                right: "10px",
+                                top: "42px",
+                                cursor: "pointer",
+                                color: "#888",
+                              }}
+                            >
+                              {showNewPassword ? <FaEyeSlash /> : <FaEye />}
+                            </span>
             </div>
             <div className="d-grid mb-3">
               <button type="submit" className="btn btn-warning btn-sm fw-bold" disabled={loading}>

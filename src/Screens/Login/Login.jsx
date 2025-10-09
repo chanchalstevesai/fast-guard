@@ -83,12 +83,12 @@ export const Login = () => {
 
           <form onSubmit={handleSubmit}>
             <div className="mb-3">
-              <label htmlFor="username" className="form-label fw-medium">Username</label>
+              <label htmlFor="username" className="form-label fw-medium">Email</label>
               <input
                 type="text" // Corrected from 'username'
                 className="form-control"
                 id="username"
-                placeholder="Enter username"
+                placeholder="Enter email"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required

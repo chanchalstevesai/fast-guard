@@ -136,7 +136,7 @@ export const Dashboard = () => {
     <div className="p-5 d-flex justify-content-center" style={{ background: "linear-gradient(135deg, #fffbe6, #f7e0b5)", minHeight: "100vh" }}>
       <div className="card w-100 shadow" style={{ borderRadius: "12px", maxWidth: "1200px" }}>
         <div className="card-header text-center fw-bold text-black" style={{ backgroundColor: "#d4a52e", borderTopLeftRadius: "12px", borderTopRightRadius: "12px", fontSize: "20px", padding: "15px" }}>
-          GUARD LIST
+          NEW GUARDS 
         </div>
         <div className="card-body">
           {/* Filters */}

@@ -20,12 +20,10 @@ const ViewActivity = () => {
   const navigate = useNavigate();
 
   const handleFilter = async () => {
-
     if (!status) {
       alert("Please select a status before filtering.");
       return;
     }
-
     setLoading(true);
     try {
 
@@ -55,7 +53,7 @@ const ViewActivity = () => {
 
   return (
     <div className="container mt-4 mb-5 p-4">
-      <p>Member: {selectedEmail || "No member selected"}</p>
+      <p><strong>Member:</strong> {selectedEmail || "No member selected"}</p>
       <p className="text-center text-2xl">Total: {totalGuards}</p>
 
       <div className="flex flex-col sm:flex-row sm:items-end gap-4">

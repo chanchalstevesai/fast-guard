@@ -10,6 +10,8 @@ export const ApprovedView = () => {
   const location = useLocation();
   const dispatch = useDispatch();
   const id = location.state.userId;
+  console.log(id,"id");
+  
 
   const { userData } = useSelector((state) => state.userListSlice);
 

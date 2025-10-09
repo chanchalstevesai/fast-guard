@@ -61,7 +61,7 @@ useEffect(() => {
         <Container>
           <SlidingMenu />
           {/* Logo */}
-          <Navbar.Brand as={Link} to="" className="d-flex align-items-center">
+          <Navbar.Brand  className="d-flex align-items-center">
             <img
               src={logo}
               alt="Logo"

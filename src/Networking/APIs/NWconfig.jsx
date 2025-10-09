@@ -1,7 +1,6 @@
 // export const BaseURl = "https://api.securityguardbank.com/";
 
-
-export const BaseURl ="https://9ac45abc9211.ngrok-free.app/";
+export const BaseURl ="https://108acfc8509a.ngrok-free.app/";
 
 export const submitRegistration = "submit";
 
