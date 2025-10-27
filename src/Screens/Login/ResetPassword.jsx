@@ -8,7 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import logo from '../../../Images/logo.png';
 import { BaseURl } from '../../Networking/APIs/NWconfig';
 import Loader from '../../Component/Loader';
-import './login.css';
+// import './login.css';
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 export const ResetPassword = () => {

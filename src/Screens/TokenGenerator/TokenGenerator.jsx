@@ -18,15 +18,15 @@ const TokenGenerator = () => {
   useEffect(() => {
     const fetchTokenDataAndCheck = async () => {
       try {
+        const checkResponse = await CheckToken();
+        setTokenStatusMessage(checkResponse.message);
+        setTokenStatusType(checkResponse.status);
+
         const data = await getTokenData();
         if (data) {
           setClientId(data.client_id || "");
           setClientSecret(data.client_secret || "");
         }
-
-        const checkResponse = await CheckToken()
-        setTokenStatusMessage(checkResponse.message);
-        setTokenStatusType(checkResponse.status);
 
       } catch (error) {
         console.error("Error fetching token data or checking token:", error);
@@ -56,6 +56,9 @@ const TokenGenerator = () => {
       setClientId(result.client_id || "");
       setClientSecret(result.client_secret || "");
       setAuthorization("");
+    const successMessage = result?.message || result?.msg || "Token successfully!";
+    alert(successMessage);
+
       console.log(result);
     }
     catch (error) {
@@ -67,7 +70,7 @@ const TokenGenerator = () => {
     }
     finally {
       setLoading(false);
-
+      window.location.reload();
     }
   };
 

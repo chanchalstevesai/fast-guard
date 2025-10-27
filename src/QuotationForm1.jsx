@@ -55,6 +55,12 @@ const QuotationForm1 = () => {
   const [showModal, setShowModal] = useState(false);
   const [showResumeError, setShowResumeError] = useState(false);
   const [showDisclaimer, setShowDisclaimer] = useState(false);
+  const [fileUploadErrors, setFileUploadErrors] = useState({
+    headshot: false,
+    securityLicense: false,
+    driverLicense: false,
+  });
+  const [securityLicenseOptional, setSecurityLicenseOptional] = useState(false);
 
   const openModal = () => setShowModal(true);
   const closeModal = () => setShowModal(false);
@@ -62,7 +68,7 @@ const QuotationForm1 = () => {
   const [showDefinitions, setShowDefinitions] = useState(false);
   const [countries, setCountries] = useState([]);
   const [states, setStates] = useState([]);
-  
+
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedCode, setSelectedCode] = useState("");
   const [selectedState, setSelectedState] = useState("");
@@ -88,6 +94,11 @@ const QuotationForm1 = () => {
     firewatch_certificate: useRef(null),
   };
 
+  // Refs for file upload sections to focus on missing ones
+  const headshotRef = useRef(null);
+  const securityLicenseRef = useRef(null);
+  const driverLicenseRef = useRef(null);
+
   const toggleDefinitions = (e) => {
     e.preventDefault();
     setShowDefinitions(!showDefinitions);
@@ -112,6 +123,12 @@ const QuotationForm1 = () => {
             ? ""
             : prev.veteranStatus,
         }));
+      } else if (name === "securityLicenseOptional") {
+        setSecurityLicenseOptional(checked);
+        // Clear security license error if making it optional
+        if (checked) {
+          setFileUploadErrors((prev) => ({ ...prev, securityLicense: false }));
+        }
       } else {
         setFormData((prev) => ({
           ...prev,
@@ -175,8 +192,8 @@ const QuotationForm1 = () => {
     }
 
     const statesList = State.getStatesOfCountry(countryIsoCode);
-    console.log(statesList,"statelist");
-    
+    console.log(statesList, "statelist");
+
     setStates(statesList);
     setSelectedState("");
     setCities([]);
@@ -205,6 +222,75 @@ const QuotationForm1 = () => {
       alert("Resume file is required.");
       return;
     }
+
+    // Check for mandatory file uploads
+    const missingFiles = [];
+    const errorStates = {
+      headshot: false,
+      securityLicense: false,
+      driverLicense: false,
+    };
+
+    if (!formData.images || formData.images.length === 0) {
+      missingFiles.push("HeadShot Image");
+      errorStates.headshot = true;
+    }
+
+    if (
+      !securityLicenseOptional &&
+      (!formData.security_guard_license ||
+        formData.security_guard_license.files.length === 0)
+    ) {
+      missingFiles.push("Security Guard License");
+      errorStates.securityLicense = true;
+    }
+
+    if (
+      !formData.driver_license ||
+      formData.driver_license.files.length === 0
+    ) {
+      missingFiles.push("Driver License");
+      errorStates.driverLicense = true;
+    }
+
+    if (missingFiles.length > 0) {
+      // Set error states
+      setFileUploadErrors(errorStates);
+
+      // Focus on first missing field
+      if (errorStates.headshot && headshotRef.current) {
+        headshotRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+        headshotRef.current.focus();
+      } else if (
+        errorStates.securityLicense &&
+        !securityLicenseOptional &&
+        securityLicenseRef.current
+      ) {
+        securityLicenseRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+        securityLicenseRef.current.focus();
+      } else if (errorStates.driverLicense && driverLicenseRef.current) {
+        driverLicenseRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+        driverLicenseRef.current.focus();
+      }
+
+      return;
+    }
+
+    // Clear any previous errors if all files are present
+    setFileUploadErrors({
+      headshot: false,
+      securityLicense: false,
+      driverLicense: false,
+    });
     const countryName =
       countries.find((c) => c.isoCode === selectedCountry)?.name || "";
     const stateName =
@@ -325,6 +411,8 @@ const QuotationForm1 = () => {
         imagePreviews: previews,
         imageBase64Map: base64Images,
       }));
+      // Clear headshot error when file is uploaded
+      setFileUploadErrors((prev) => ({ ...prev, headshot: false }));
     } else {
       setFormData((prev) => ({
         ...prev,
@@ -334,6 +422,12 @@ const QuotationForm1 = () => {
           base64Map: base64Images,
         },
       }));
+      // Clear specific error when file is uploaded
+      if (documentKey === "security_guard_license") {
+        setFileUploadErrors((prev) => ({ ...prev, securityLicense: false }));
+      } else if (documentKey === "driver_license") {
+        setFileUploadErrors((prev) => ({ ...prev, driverLicense: false }));
+      }
     }
 
     toast.success(
@@ -395,7 +489,7 @@ const QuotationForm1 = () => {
             <div className="card p-3 mb-4">
               <h6 className="mb-1 fw-semibold">
                 Upload Your Resume / CV{" "}
-                <span className="text-danger">(Required)</span>
+                <span className="text-danger">*</span>
               </h6>
               <p className="text-muted mb-3" style={{ fontSize: "14px" }}>
                 Documents must be in one of the following formats:{" "}
@@ -472,6 +566,7 @@ const QuotationForm1 = () => {
                 to do so may delay or deny processing of your application)
               </h6>
 
+
               <input
                 type="file"
                 ref={imageInputRef}
@@ -491,87 +586,177 @@ const QuotationForm1 = () => {
                 />
               ))}
 
-              <div className="d-flex flex-wrap gap-3 mt-2">
-                <div className="d-flex flex-column">
-                  <button
-                    type="button"
-                    className="btn btn-light border d-flex align-items-center"
-                    onClick={() => imageInputRef.current?.click()}
-                  >
-                    <FaUpload className="me-2" />
-                    Upload HeadShot Image
-                  </button>
-                  {formData.images && formData.images.length > 0 && (
-                    <span
-                      className="d-block text-success mt-1"
-                      style={{ fontSize: "12px" }}
-                    >
-                      Selected: {formData.images[0].name}
-                    </span>
-                  )}
-                </div>
+<div className="d-flex flex-column gap-3 mt-2" style={{ width: "100%" }}>
+  {/* HEADSHOT IMAGE */}
+  <div className="d-flex align-items-center gap-3">
+    {/* LEFT SIDE: Button */}
+    <button
+      ref={headshotRef}
+      type="button"
+      className={`btn btn-light d-flex align-items-center ${
+        fileUploadErrors.headshot ? "border-danger" : "border-danger"
+      }`}
+      onClick={() => imageInputRef.current?.click()}
+      style={{
+        border: fileUploadErrors.headshot
+          ? "2px solid #dc3545"
+          : "1px solid #dc3545",
+        boxShadow: fileUploadErrors.headshot
+          ? "0 0 0 0.2rem rgba(220, 53, 69, 0.25)"
+          : "none",
+        width: "300px",
+      }}
+    >
+      <FaUpload className="me-2" />
+      Upload HeadShot Image <span className="text-danger">*</span>
+    </button>
 
-                <div className="d-flex flex-column">
-                  <button
-                    type="button"
-                    className="btn btn-light border d-flex align-items-center"
-                    onClick={() => refs.security_guard_license.current?.click()}
-                  >
-                    <FaUpload className="me-2" />
-                    Upload Security Guard License
-                  </button>
-                  {formData.security_guard_license &&
-                    formData.security_guard_license.files.length > 0 && (
-                      <span
-                        className="d-block text-success mt-1"
-                        style={{ fontSize: "12px" }}
-                      >
-                        Selected:{" "}
-                        {formData.security_guard_license.files[0].name}
-                      </span>
-                    )}
-                </div>
+    {/* RIGHT SIDE: Validation Messages */}
+    <div className="d-flex flex-column">
+      {formData.images && formData.images.length > 0 && (
+        <span className="text-success" style={{ fontSize: "12px" }}>
+          Selected: {formData.images[0].name}
+        </span>
+      )}
+      {fileUploadErrors.headshot && (
+        <span className="text-danger" style={{ fontSize: "12px" }}>
+          HeadShot Image is required
+        </span>
+      )}
+    </div>
+  </div>
 
-                <div className="d-flex flex-column">
-                  <button
-                    type="button"
-                    className="btn btn-light border d-flex align-items-center"
-                    onClick={() => refs.driver_license.current?.click()}
-                  >
-                    <FaUpload className="me-2" />
-                    Upload Driver License
-                  </button>
-                  {formData.driver_license &&
-                    formData.driver_license.files.length > 0 && (
-                      <span
-                        className="d-block text-success mt-1"
-                        style={{ fontSize: "12px" }}
-                      >
-                        Selected: {formData.driver_license.files[0].name}
-                      </span>
-                    )}
-                </div>
+  {/* SECURITY GUARD LICENSE */}
+  <div className="d-flex align-items-center gap-3">
+    {/* LEFT SIDE: Button */}
+    <button
+      ref={securityLicenseRef}
+      type="button"
+      className={`btn btn-light d-flex align-items-center ${
+        fileUploadErrors.securityLicense
+          ? "border-danger"
+          : securityLicenseOptional
+          ? "border-secondary"
+          : "border-danger"
+      }`}
+      onClick={() => refs.security_guard_license.current?.click()}
+      style={{
+        border: fileUploadErrors.securityLicense
+          ? "2px solid #dc3545"
+          : securityLicenseOptional
+          ? "1px solid #6c757d"
+          : "1px solid #dc3545",
+        boxShadow: fileUploadErrors.securityLicense
+          ? "0 0 0 0.2rem rgba(220, 53, 69, 0.25)"
+          : "none",
+        width: "300px",
+      }}
+    >
+      <FaUpload className="me-2" />
+      Upload Security Guard License{" "}
+      {!securityLicenseOptional && <span className="text-danger">*</span>}
+    </button>
 
-                <div className="d-flex flex-column">
-                  <button
-                    type="button"
-                    className="btn btn-light border d-flex align-items-center"
-                    onClick={() => refs.firewatch_certificate.current?.click()}
-                  >
-                    <FaUpload className="me-2" />
-                    Upload Firewatch Certificate
-                  </button>
-                  {formData.firewatch_certificate &&
-                    formData.firewatch_certificate.files.length > 0 && (
-                      <span
-                        className="d-block text-success mt-1"
-                        style={{ fontSize: "12px" }}
-                      >
-                        Selected: {formData.firewatch_certificate.files[0].name}
-                      </span>
-                    )}
-                </div>
-              </div>
+    {/* RIGHT SIDE: Checkbox + Validation */}
+    <div className="d-flex flex-column">
+      <div className="form-check mb-1">
+        <input
+          className="form-check-input"
+          type="checkbox"
+          id="securityLicenseOptional"
+          name="securityLicenseOptional"
+          checked={securityLicenseOptional}
+          onChange={handleChange}
+        />
+        <label
+          className="form-check-label"
+          htmlFor="securityLicenseOptional"
+          style={{ fontSize: "12px" }}
+        >
+          Note: Mark if Security Guard License is not required in your state
+        </label>
+      </div>
+
+      {formData.security_guard_license &&
+        formData.security_guard_license.files.length > 0 && (
+          <span className="text-success" style={{ fontSize: "12px" }}>
+            Selected: {formData.security_guard_license.files[0].name}
+          </span>
+        )}
+
+      {fileUploadErrors.securityLicense && !securityLicenseOptional && (
+        <span className="text-danger" style={{ fontSize: "12px" }}>
+          Security Guard License is required
+        </span>
+      )}
+    </div>
+  </div>
+
+  {/* DRIVER LICENSE */}
+  <div className="d-flex align-items-center gap-3">
+    {/* LEFT SIDE */}
+    <button
+      ref={driverLicenseRef}
+      type="button"
+      className={`btn btn-light d-flex align-items-center ${
+        fileUploadErrors.driverLicense ? "border-danger" : "border-danger"
+      }`}
+      onClick={() => refs.driver_license.current?.click()}
+      style={{
+        border: fileUploadErrors.driverLicense
+          ? "2px solid #dc3545"
+          : "1px solid #dc3545",
+        boxShadow: fileUploadErrors.driverLicense
+          ? "0 0 0 0.2rem rgba(220, 53, 69, 0.25)"
+          : "none",
+        width: "300px",
+      }}
+    >
+      <FaUpload className="me-2" />
+      Upload Driver License <span className="text-danger">*</span>
+    </button>
+
+    {/* RIGHT SIDE */}
+    <div className="d-flex flex-column">
+      {formData.driver_license &&
+        formData.driver_license.files.length > 0 && (
+          <span className="text-success" style={{ fontSize: "12px" }}>
+            Selected: {formData.driver_license.files[0].name}
+          </span>
+        )}
+      {fileUploadErrors.driverLicense && (
+        <span className="text-danger" style={{ fontSize: "12px" }}>
+          Driver License is required
+        </span>
+      )}
+    </div>
+  </div>
+
+  {/* FIREWATCH CERTIFICATE */}
+  <div className="d-flex align-items-center gap-3">
+    {/* LEFT SIDE */}
+    <button
+      type="button"
+      className="btn btn-light border d-flex align-items-center"
+      onClick={() => refs.firewatch_certificate.current?.click()}
+      style={{ width: "300px" }}
+    >
+      <FaUpload className="me-2" />
+      Upload Firewatch Certificate
+    </button>
+
+    {/* RIGHT SIDE */}
+    <div className="d-flex flex-column">
+      {formData.firewatch_certificate &&
+        formData.firewatch_certificate.files.length > 0 && (
+          <span className="text-success" style={{ fontSize: "12px" }}>
+            Selected: {formData.firewatch_certificate.files[0].name}
+          </span>
+        )}
+    </div>
+  </div>
+</div>
+
             </div>
 
             <div className="card p-3 mb-4">
