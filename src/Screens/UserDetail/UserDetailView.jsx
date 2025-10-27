@@ -12,6 +12,8 @@ import { toast } from "react-toastify";
 import PassportUploadForm from "../../PassportForm";
 import { useDashboard } from "../../Context/DashboardContext";
 import { DeleteUserApi } from "../../Networking/APIs/ApprovedApi";
+import { BiBox } from "react-icons/bi";
+import CallAction from "./CallAction";
 
 
 export const UserDetailView = () => {
@@ -231,6 +233,7 @@ export const UserDetailView = () => {
   }
 
   return (
+<>
     <div
       className="p-5"
       style={{
@@ -238,26 +241,17 @@ export const UserDetailView = () => {
         borderTopLeftRadius: "12px",
         borderTopRightRadius: "12px",
         fontSize: "16px",
+        display: "flex",
       }}
     >
+     
+      <div>
       {userData ? (
         <div
           className="card shadow-lg p-4"
           style={{ borderRadius: "12px", background: "#fffef9" }}
         >
 
-
-          {/* <h4 className="text-center mb-4 fw-bold text-dark position-relative">
-            <i className="bi bi-person-lines-fill me-2 text-warning"></i>
-            GUARD DETAILS
-            <hr className="w-75 mx-auto border-warning" />
-            <i
-              className="bi bi-trash3-fill text-danger position-absolute end-0 top-0 me-2"
-              style={{ cursor: "pointer", fontSize: "1.3rem" }}
-              onClick={handleDeleteGuard}
-              title="Delete Guard"
-            ></i>
-          </h4> */}
 
         {/* GUARD DETAILS Heading */}
 <div className="position-relative mb-4 text-center">
@@ -609,6 +603,8 @@ export const UserDetailView = () => {
           <Loader />
         </div>
       )}
+      </div>
+      <CallAction/>
 
       {/* Approve Modal */}
       {showModal && (
@@ -752,5 +748,22 @@ export const UserDetailView = () => {
         </div>
       )}
     </div>
+ 
+</>
   );
 };
+
+
+/*
+step 1:  "Call Action" Heading
+step 2:  Create Add+ Button (if guard is available)
+step 3:  when we will click in Add+  button in the below i have to show
+in the beloow Attempt dropdown with having option(First Attempt,Second Attempt, Last Attempt) 
+right side i have to show time picker to select the time and right side i have to show status dropdown with having
+option (Answer and  No Answer)
+and right i ahve to create Add button
+ thes all dropdown and time picker and add button should be in single row
+
+
+
+*/
